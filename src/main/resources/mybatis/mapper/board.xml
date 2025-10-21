@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jang.gitminiprojectthejoeun.dao.BoardDao">
+    <sql id="seachWhere">
+        <!-- 동적쿼리 -->
+        <where>
+            <if test="keyword!=null and keyword !=''">
+                <choose>
+                    <when test="type=='title'">
+                        title LIKE CONCAT(CONCAT('%',#{keyword}),'%')
+                    </when>
+                    <when test="type=='writer'">
+                        writer LIKE CONCAT(CONCAT('%',#{keyword}),'%')
+                    </when>
+                    <when test="type=='content'">
+                        content LIKE CONCAT(CONCAT('%',#{keyword}),'%')
+                    </when>
+                </choose>
+            </if>
+        </where>
+    </sql>
+
+    <insert id="writeBoard" parameterType="BoardDto">
+        insert into board(id,title,content,writer,regdate,hit,password) values
+        (board_seq.nextval,#{title},#{content},#{writer},sysdate,1,#{password})
+    </insert>
+    <select id="findAll" resultType="BoardDto" parameterType="PageDto">
+        SELECT id,writer,title,content,regdate,hit, password
+        FROM board
+        <include refid="seachWhere"></include>
+        ORDER BY regdate DESC
+        OFFSET #{page} ROWS FETCH NEXT #{size} ROWS ONLY
+    </select>
+    <select id="findById" resultType="BoardDto" parameterType="int">
+        select * from board where id = #{id}
+    </select>
+    <delete id="deleteBoard" parameterType="BoardDto">
+        delete from board where id = #{id} and password = #{password}
+    </delete>
+    <select id="totalBoard" parameterType="PageDto" resultType="int">
+        SELECT count(*) AS total FROM board
+        <include refid="seachWhere"></include>
+    </select>
+    <select id="search" parameterType="string" resultType="BoardDto">
+        <!-- SELECT * FROM board WHERE title LIKE '%'||#{keyword}||'%'-->
+        <!-- 컬럼명은 #처리 안된다.-->
+        SELECT * FROM board
+        <where>
+            <choose>
+                <when test="type=='title'">
+                    title LIKE CONCAT(CONCAT('%',#{keyword}),'%')
+                </when>
+                <when test="type=='writer'">
+                    writer LIKE CONCAT(CONCAT('%',#{keyword}),'%')
+                </when>
+                <when test="type=='content'">
+                    content LIKE CONCAT(CONCAT('%',#{keyword}),'%')
+                </when>
+            </choose>
+        </where>
+    </select>
+</mapper>

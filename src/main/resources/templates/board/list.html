@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head::head('리스트')}"></head>
+<body>
+<header th:replace="~{fragments/header}"></header>
+
+<div class="overflow-x-auto max-w-6xl mx-auto mt-10">
+    <th:block th:if="${!boardList.isEmpty()}">
+        <table class="table table-zebra w-full border border-base-300">
+            <!-- 테이블 헤더 -->
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>제목</th>
+                <th>글쓴이</th>
+                <th>날짜</th>
+                <th>조회수</th>
+            </tr>
+            </thead>
+
+            <!-- 테이블 바디 -->
+            <tbody>
+            <tr th:each="item:${boardList}">
+                <td>
+                    <a th:href="@{../board/{id}/detail(id=${item.id})}" class="link link-primary" th:text="${item.id}"></a>
+                </td>
+                <td>
+                    <a th:href="@{../board/{id}/detail(id=${item.id})}" class="link link-hover" th:text="${item.title}"></a>
+                </td>
+                <td th:text="${item.writer}"></td>
+                <td th:text="${item.regdate}"></td>
+                <td th:text="${item.hit}"></td>
+            </tr>
+            </tbody>
+        </table>
+        <nav class="my-5 flex justify-center">
+            <div class="join">
+
+                <!--<a href="" class="join-item btn"
+                   th:href="@{|../board/list?page=${page}&size=${responsePageDto.size}|}">이전</a> -->
+                <a href="" class="join-item btn"
+                   th:href="@{../board/list(
+                    page=${responsePageDto.page - 1},
+                    size=${responsePageDto.size},
+                    keyword = ${responsePageDto.keyword},
+                    type= ${responsePageDto.type}
+                    )}"
+                   th:classappend="${!responsePageDto.hasPrev} ? 'btn-disabled'"
+                >이전</a>
+
+                <th:block
+                        th:each="item:${#numbers.sequence(responsePageDto.getStartPage(5),responsePageDto.getEndPage(5))}">
+                    <!--1~5-->
+                    <a href="" class="join-item btn"
+                       th:text="${item}"
+                       th:classappend="${item == responsePageDto.page} ? 'btn-primary'"
+                       th:href="@{../board/list(
+                       page=${item},
+                       size=${responsePageDto.size},
+                       keyword = ${responsePageDto.keyword},
+                       type= ${responsePageDto.type}
+                       )}">1</a>
+                </th:block>
+                <a href="" class="join-item btn"
+                   th:href="@{../board/list(
+                        page=${responsePageDto.page + 1},
+                        size=${responsePageDto.size},
+                        keyword = ${responsePageDto.keyword},
+                        type= ${responsePageDto.type})}"
+                   th:classappend="${!responsePageDto.hasNext} ? 'btn-disabled'"
+                >다음</a>
+            </div>
+        </nav>
+    </th:block>
+    <th:block th:if="${boardList.isEmpty()}">
+        <div class="my-10 text-4xl font-bold text-center">결과가 없습니다.</div>
+    </th:block>
+    <form th:action="@{/board/list}" method="get"
+          class="flex flex-wrap items-center justify-center gap-3 p-4 bg-base-200 rounded-xl shadow-md">
+        <!-- 검색 타입 -->
+        <div class="form-control w-40">
+
+
+            <select class="select select-primary w-full" name="type">
+                <option th:value="writer"  th:selected="${responsePageDto.type=='writer'}">작성자</option>
+                <option th:value="title"   th:selected="${responsePageDto.type=='title'}">제목</option>
+                <option th:value="content" th:selected="${responsePageDto.type=='content'}">내용</option>
+                <option th:value="all"     th:selected="${responsePageDto.type=='all'}">전체</option>
+            </select>
+        </div>
+        <!-- 검색어 입력 -->
+        <div class="form-control min-w-[250px]">
+            <input type="text"
+                   name="keyword"
+                   th:value="${param.keyword}"
+                   placeholder="검색어를 입력하세요"
+                   class="input input-bordered input-primary w-full"/>
+        </div>
+
+        <!-- 검색 버튼 -->
+        <div class="form-control">
+            <button class="btn btn-primary w-28"> 검색</button>
+        </div>
+    </form>
+
+    <!-- 로그인한 사람만 보이게 하기 -->
+    <div class="mt-5" th:if="${session.loggedMember!=null}"><a href="../board/write" class="btn btn-primary">글쓰기</a>
+    </div>
+</div>
+<div th:replace="~{fragments/footer::footer-sns}"></div>
+</body>
+</html>
