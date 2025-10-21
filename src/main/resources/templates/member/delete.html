@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head::head('회원탈퇴')}"></head>
+<body>
+<header th:replace="~{fragments/header}"></header>
+
+<form action="../member/delete" method="post"  class="max-w-2xl mx-auto space-y-4">
+    <!-- 제목 -->
+    <h1 class="text-3xl my-10">회원탈퇴</h1>
+    <div class="form-control">
+        <label class="label mb-2">
+            <span class="label-text font-bold">PASSWORD</span>
+        </label>
+        <input type="password" placeholder="비밀번호 입력" name="userPW"
+               class="input input-bordered w-full"/>
+    </div>
+    <div class="form-control mt-6">
+        <button class="btn btn-primary w-full">회원탈퇴</button>
+    </div>
+
+</form>
+
+<div th:replace="~{fragments/footer::footer-sns}"></div>
+</body>
+</html>

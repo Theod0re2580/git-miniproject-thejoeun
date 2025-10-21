@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head::head('글쓰기')}"></head>
+<body>
+<header th:replace="~{fragments/header}"></header>
+
+<form action="../board/write" method="post" th:object="${boardDto}" class="max-w-2xl mx-auto mt-10 space-y-4">
+
+    <!-- 제목 -->
+    <h1 class="text-3xl mb-">글쓰기</h1>
+    <div class="form-control">
+        <label class="label">
+            <span class="label-text font-bold">제목</span>
+        </label>
+        <input type="text" th:field="*{title}" placeholder="제목을 입력하세요"
+               class="input input-bordered w-full"/>
+        <div th:if="${#fields.hasErrors('title')}"
+             th:errors="*{title}"
+             class="text-error text-sm mt-1"></div>
+    </div>
+
+    <!-- 글쓴이 -->
+    <div class="form-control">
+        <label class="label">
+            <span class="label-text font-bold">글쓴이</span>
+        </label>
+        <input type="text" th:field="*{writer}" placeholder="작성자 이름"
+               class="input input-bordered w-full" th:value="${session.loggedMember.userName}"/>
+        <div th:if="${#fields.hasErrors('writer')}"
+             th:errors="*{writer}"
+             class="text-error text-sm mt-1"></div>
+    </div>
+
+    <!-- 내용 -->
+    <div class="form-control">
+        <label class="label">
+            <span class="label-text font-bold">내용</span>
+        </label>
+        <textarea th:field="*{content}" placeholder="내용을 입력하세요"
+                  class="textarea textarea-bordered h-32 w-full"></textarea>
+        <div th:if="${#fields.hasErrors('content')}"
+             th:errors="*{content}"
+             class="text-error text-sm mt-1"></div>
+    </div>
+
+    <!-- 비밀번호 -->
+    <div class="form-control">
+        <label class="label">
+            <span class="label-text font-bold">비밀번호</span>
+        </label>
+        <input type="password" th:field="*{password}" placeholder="비밀번호 입력"
+               class="input input-bordered w-full"/>
+        <div th:if="${#fields.hasErrors('password')}"
+             th:errors="*{password}"
+             class="text-error text-sm mt-1"></div>
+    </div>
+
+    <!-- 버튼 -->
+    <div class="form-control mt-6">
+        <button class="btn btn-primary w-full">글쓰기</button>
+    </div>
+
+</form>
+
+<div th:replace="~{fragments/footer::footer-sns}"></div>
+</body>
+</html>

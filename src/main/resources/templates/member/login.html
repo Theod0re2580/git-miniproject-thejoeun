@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head::head('로그인')}"></head>
+<body>
+<header th:replace="~{fragments/header}"></header>
+
+<form action="../member/login" method="post" th:object="${loginDto}" class="max-w-2xl mx-auto space-y-4">
+    <!-- 제목 -->
+    <h1 class="text-3xl my-10">로그인</h1>
+        <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-error shadow mb-4">
+            <span>
+                <ul class="list-disc pl-5">
+                    <li th:each="err : ${#fields.globalErrors()}" th:text="${err}"></li>
+                </ul>
+            </span>
+        </div>
+    <div class="form-control">
+        <label class="label">
+            <span class="label-text font-bold  mb-2">USER ID</span>
+        </label>
+        <div class="flex items-center gap-2">
+            <input type="text" th:field="*{userID}" placeholder="아이디를 입력하세요."
+                   class="input input-bordered flex-1 "/>
+        </div>
+        <div th:if="${#fields.hasErrors('userID')}"
+             th:errors="*{userID}"
+             class="text-error text-sm mt-1"></div>
+    </div>
+    <div class="form-control">
+        <label class="label mb-2">
+            <span class="label-text font-bold">PASSWORD</span>
+        </label>
+        <input type="password" th:field="*{userPW}" placeholder="비밀번호 입력"
+               class="input input-bordered w-full"/>
+        <div th:if="${#fields.hasErrors('userPW')}"
+             th:errors="*{userPW}"
+             class="text-error text-sm mt-1"></div>
+    </div>
+    <div class="form-control mt-6">
+        <button class="btn btn-primary w-full">로그인</button>
+    </div>
+
+</form>
+
+<div th:replace="~{fragments/footer::footer-sns}"></div>
+<script>
+    const btnIdCheck = document.querySelector("#btn-id-check");
+    const userID = document.querySelector("#userID");
+    btnIdCheck.addEventListener("click", async (e) => {
+        const res = await fetch("/member/idCheck", {
+            method: "post",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({userID: userID.value})
+        })
+        const data = await res.json();
+        console.log(data);
+        if (data.isDuplicate) {
+            alert("쓸 수 없는 아이디 입니다.");
+        }
+    })
+    //로그인까지 만들어 보기...
+
+</script>
+</body>
+</html>
