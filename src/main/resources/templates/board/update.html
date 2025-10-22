@@ -8,24 +8,21 @@
     <h1 class="text-3xl font-bold mb-8 text-center">게시글 수정</h1>
 
     <form th:action="@{/board/update}" method="post">
-        <!-- 게시글 번호 (hidden) -->
         <input type="hidden" name="id" th:value="${boardDto.id}">
 
-        <!-- 제목 -->
         <div class="mb-4">
             <label class="block font-bold mb-1">제목</label>
             <input type="text" name="title" th:value="${boardDto.title}"
                    class="input input-bordered w-full" required>
         </div>
 
-        <!-- 내용 -->
         <div class="mb-4">
             <label class="block font-bold mb-1">내용</label>
-            <textarea name="content" rows="10" class="textarea textarea-bordered w-full" required
-                      th:text="${boardDto.content}"></textarea>
+            <textarea name="content" rows="10"
+                      class="textarea textarea-bordered w-full"
+                      th:text="${boardDto.content}" required></textarea>
         </div>
 
-        <!-- 수정 버튼 -->
         <div class="text-right">
             <button type="submit" class="btn btn-primary">수정 완료</button>
             <a th:href="@{/board/{id}/detail(id=${boardDto.id})}" class="btn btn-secondary">취소</a>
@@ -34,5 +31,10 @@
 </div>
 
 <div th:replace="~{fragments/footer::footer-sns}"></div>
+
+<script th:inline="javascript">
+    const msg = /*[[${msg}]]*/ null;
+    if (msg) alert(msg);
+</script>
 </body>
 </html>

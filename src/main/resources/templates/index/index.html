@@ -6,3 +6,9 @@
     <h1 class="text-3xl my-10">홈</h1>
 </body>
 </html>
+<script th:inline="javascript">
+    const msg = /*[[${msg}]]*/ null;
+    if (msg) {
+        alert(msg);
+    }
+</script>

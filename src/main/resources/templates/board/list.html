@@ -102,7 +102,7 @@
           class="flex flex-wrap items-center justify-center my-5">
         <div class="form-control w-40">
             <select class="select select-primary w-full" name="type">
-                <option th:value="writer"  th:selected="${responsePageDto.type=='writer'}">작성자</option>
+                <option th:value="writer"  th:selected="${responsePageDto.type=='writer'}">글쓴이</option>
                 <option th:value="title"   th:selected="${responsePageDto.type=='title'}">제목</option>
                 <option th:value="content" th:selected="${responsePageDto.type=='content'}">내용</option>
                 <option th:value="all"     th:selected="${responsePageDto.type=='all'}">전체</option>
@@ -130,3 +130,9 @@
 <div th:replace="~{fragments/footer::footer-sns}"></div>
 </body>
 </html>
+<script th:inline="javascript">
+    const msg = /*[[${msg}]]*/ null;
+    if (msg) {
+        alert(msg);
+    }
+</script>

@@ -2,33 +2,58 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="com.jang.gitminiprojectthejoeun.dao.MemberDao">
+
+    <!-- 회원가입 -->
     <insert id="signup" parameterType="MemberDto">
-        insert into member (id,userID,userPW,userName,userEmail) values
-        (member_seq.nextval,#{userID},#{userPW},#{userName},#{userEmail})
+        INSERT INTO member (id, userID, userPW, userName, userEmail)
+        VALUES (member_seq.nextval, #{userID}, #{userPW}, #{userName}, #{userEmail})
     </insert>
+
+    <!-- ID 중복 체크 -->
     <select id="idCheck" parameterType="MemberDto" resultType="int">
-        SELECT count(*) AS count FROM MEMBER WHERE userid = #{userID}
+        SELECT COUNT(*) AS count FROM member WHERE userid = #{userID}
     </select>
+
     <!-- USERID 중복 체크 -->
     <select id="existsUserId" parameterType="string" resultType="int">
-        SELECT COUNT(*)
-        FROM member
-        WHERE userID = #{userID}
+        SELECT COUNT(*) FROM member WHERE userID = #{userID}
     </select>
 
     <!-- EMAIL 중복 체크 -->
     <select id="existsEmail" parameterType="string" resultType="int">
-        SELECT COUNT(*)
-        FROM member
-        WHERE userEmail = #{userEmail}
+        SELECT COUNT(*) FROM member WHERE userEmail = #{userEmail}
     </select>
+
+    <!-- 로그인 -->
     <select id="login" parameterType="LoginDto" resultType="MemberDto">
         SELECT *
         FROM member
         WHERE userID = #{userID} AND userPW = #{userPW}
     </select>
+
+    <!-- 회원 탈퇴 -->
     <delete id="deleteMember" parameterType="LoginDto">
-        delete from member where userID =#{userID} and userPW = #{userPW}
+        DELETE FROM member
+        WHERE userID = #{userID} AND userPW = #{userPW}
     </delete>
+
+    <!-- ✅ 회원정보 수정 (board update 스타일) -->
+    <update id="updateMember" parameterType="MemberDto">
+        UPDATE member
+        SET
+        userName  = #{userName},
+        userEmail = #{userEmail},
+        userPW    = NVL(NULLIF(#{userPW}, ''), userPW)
+        WHERE id = #{id}
+    </update>
+
+    <!-- ✅ userid로 회원정보 조회 -->
+    <select id="findByUserId" parameterType="string" resultType="MemberDto">
+        SELECT *
+        FROM member
+        WHERE userID = #{userID}
+    </select>
+
 </mapper>

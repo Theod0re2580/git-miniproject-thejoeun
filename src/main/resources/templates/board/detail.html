@@ -95,19 +95,28 @@
     const btnDelete = document.querySelector("#btn-delete");
     const password = document.querySelector("#password");
     const idx = /*[[${boardDto.id}]]*/ 0;
+    const msg = /*[[${msg}]]*/ null;
+    if (msg) {
+        alert(msg);
+    }
 
     btnDelete.addEventListener("click", async () => {
-        const sendPassword = password.value;
+        const sendPassword = password.value.trim();
+        if (!sendPassword) {
+            alert("비밀번호를 입력해주세요.");
+            return;
+        }
+
         const res = await fetch("/board/delete", {
             headers: { "Content-Type": "application/json" },
-            method: "post",
-            body: JSON.stringify({ password: sendPassword, id: idx })
+            method: "POST",
+            body: JSON.stringify({ id: idx, password: sendPassword })
         });
+
         const data = await res.json();
+        alert(data.message);
         if (data.success) {
             location.href = "/board/list";
-        } else {
-            alert("비밀번호를 확인해주세요");
         }
     });
 </script>

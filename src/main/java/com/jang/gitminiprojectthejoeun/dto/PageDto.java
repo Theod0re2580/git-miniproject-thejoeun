@@ -32,4 +32,7 @@ public class PageDto {
         int endPage = getStartPage(blockSize)+blockSize - 1;
         return Math.min(endPage, totalPages);
     }
+
+    // 페이징용 offset
+    private int offset;
 }
