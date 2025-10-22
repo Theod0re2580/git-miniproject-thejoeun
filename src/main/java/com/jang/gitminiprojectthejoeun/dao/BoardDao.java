@@ -20,4 +20,5 @@ public interface BoardDao {
     BoardDto findPrev(int id);
     BoardDto findNext(int id);
     int updateBoard(BoardDto boardDto);
+    String getSecretPw(int id);
 }

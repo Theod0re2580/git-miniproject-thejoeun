@@ -2,17 +2,33 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="com.jang.gitminiprojectthejoeun.dao.BoardDao">
 
     <!-- ✅ 게시글 작성 -->
     <insert id="writeBoard" parameterType="BoardDto">
-        INSERT INTO board (id, member_id, title, content, secret_flag)
-        VALUES (board_seq.nextval, #{memberId}, #{title}, #{content}, #{secretFlag})
+        INSERT INTO board (
+        id,
+        member_id,
+        title,
+        content,
+        secret_flag,
+        secret_pw
+        )
+        VALUES (
+        board_seq.nextval,
+        #{memberId},
+        #{title},
+        #{content},
+        #{secretFlag},
+        #{secretPw}
+        )
     </insert>
 
     <!-- ✅ 게시글 전체 조회 -->
     <select id="findAll" parameterType="PageDto" resultType="BoardDto">
-        SELECT b.id,
+        SELECT
+        b.id,
         b.title,
         b.content,
         b.regdate,
@@ -49,14 +65,16 @@
 
     <!-- ✅ 게시글 상세 조회 -->
     <select id="findById" resultType="BoardDto" parameterType="int">
-        SELECT b.id,
+        SELECT
+        b.id,
         b.member_id,
         m.username AS writer,
         b.title,
         b.content,
         b.regdate,
         b.hit,
-        b.secret_flag
+        b.secret_flag,
+        b.secret_pw
         FROM board b
         JOIN member m ON b.member_id = m.id
         WHERE b.id = #{id}
@@ -77,7 +95,9 @@
             UPDATE board
                SET title = #{title},
                    content = #{content},
-                   regdate = SYSDATE
+                   regdate = SYSDATE,
+                   secret_flag = #{secretFlag},
+                   secret_pw = #{secretPw}
              WHERE id = #{id}
                AND member_id = #{memberId}
         ]]>
@@ -117,13 +137,15 @@
         <![CDATA[
             SELECT *
             FROM (
-                SELECT b.id,
-                       b.title,
-                       b.content,
-                       b.regdate,
-                       b.hit,
-                       b.secret_flag,
-                       m.username AS writer
+                SELECT
+                    b.id,
+                    b.title,
+                    b.content,
+                    b.regdate,
+                    b.hit,
+                    b.secret_flag,
+                    b.secret_pw,
+                    m.username AS writer
                 FROM board b
                 JOIN member m ON b.member_id = m.id
                 WHERE b.id < #{id}
@@ -138,13 +160,15 @@
         <![CDATA[
             SELECT *
             FROM (
-                SELECT b.id,
-                       b.title,
-                       b.content,
-                       b.regdate,
-                       b.hit,
-                       b.secret_flag,
-                       m.username AS writer
+                SELECT
+                    b.id,
+                    b.title,
+                    b.content,
+                    b.regdate,
+                    b.hit,
+                    b.secret_flag,
+                    b.secret_pw,
+                    m.username AS writer
                 FROM board b
                 JOIN member m ON b.member_id = m.id
                 WHERE b.id > #{id}
@@ -154,4 +178,11 @@
         ]]>
     </select>
 
+    <!-- ✅ 비밀글 비밀번호 -->
+    <select id="getSecretPw" parameterType="int" resultType="string">
+        SELECT NVL(b.secret_pw, m.userpw)
+        FROM board b
+        JOIN member m ON b.member_id = m.id
+        WHERE b.id = #{id}
+    </select>
 </mapper>

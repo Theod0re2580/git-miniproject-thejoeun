@@ -21,30 +21,28 @@
 
             <tbody>
             <tr th:each="item : ${boardList}">
-                <!-- 게시글 번호 -->
+                <td th:text="${item.id}"></td>
+
                 <td>
-                    <a th:href="@{/board/{id}/detail(id=${item.id})}"
-                       class="link link-primary"
-                       th:text="${item.id}">1</a>
+                    <!-- ✅ 공개글 -->
+                    <a th:if="${item.secretFlag == 0}"
+                       th:href="@{/board/{id}/detail(id=${item.id})}"
+                       class="link link-hover font-medium"
+                       th:text="${item.title}"></a>
+
+                    <!-- ✅ 비밀글 -->
+                    <a th:if="${item.secretFlag == 1}"
+                       href="#"
+                       class="link link-hover font-medium"
+                       th:attr="data-id=${item.id}, data-writer=${item.writer}, data-title=${item.title}"
+                       th:text="${item.title}"
+                       onclick="checkSecretPost(this)"></a>
+
+                    <span th:if="${item.secretFlag == 1}" class="text-error font-bold ml-1">🔒</span>
                 </td>
 
-                <!-- 제목 -->
-                <td>
-                    <a th:href="@{/board/{id}/detail(id=${item.id})}"
-                       class="link link-hover font-medium">
-                        <span th:text="${item.title}">제목</span>
-                        <!-- 🔒 비밀글 표시 -->
-                        <span th:if="${item.secretFlag == 1}" class="text-error font-bold ml-1">🔒</span>
-                    </a>
-                </td>
-
-                <!-- 작성자 (JOIN된 MEMBER.username AS writer) -->
                 <td th:text="${item.writer}">작성자</td>
-
-                <!-- 등록일 (날짜 포맷 적용) -->
                 <td th:text="${#temporals.format(item.regdate, 'yyyy-MM-dd')}">2025-10-22</td>
-
-                <!-- 조회수 -->
                 <td th:text="${item.hit}">0</td>
             </tr>
             </tbody>
@@ -100,6 +98,19 @@
         <div class="my-10 text-4xl font-bold text-center">등록된 게시글이 없습니다.</div>
     </th:block>
 
+    <!-- ✅ 비밀번호 입력 모달 -->
+    <div id="pwModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white p-5 rounded-lg shadow-lg w-80 text-center">
+            <p class="font-bold mb-3">비밀글 비밀번호를 입력하세요 🔐</p>
+            <input type="password" id="secretPwInput" placeholder="비밀번호 입력"
+                   class="input input-bordered w-full mb-3"/>
+            <div class="flex justify-center gap-3">
+                <button id="confirmBtn" class="btn btn-primary w-24">확인</button>
+                <button type="button" class="btn w-24" onclick="closePwModal()">취소</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 검색 영역 -->
     <form th:action="@{/board/list}" method="get"
           class="flex flex-wrap items-center justify-center my-5">
@@ -131,9 +142,59 @@
 </div>
 
 <div th:replace="~{fragments/footer::footer-sns}"></div>
+
 <script th:inline="javascript">
     const msg = /*[[${msg}]]*/ null;
     if (msg) alert(msg);
+
+    const loggedUser = /*[[${session.loggedMember?.userName}]]*/ null;
+    let targetBoardId = null;
+    let targetWriter = null;
+
+    // ✅ 비밀글 클릭 시 동작
+    function checkSecretPost(link) {
+        targetBoardId = link.dataset.id;
+        targetWriter = link.dataset.writer;
+
+        // 작성자 본인이면 바로 상세 이동
+        if (loggedUser && loggedUser === targetWriter) {
+            window.location.href = `/board/${targetBoardId}/detail`;
+            return;
+        }
+
+        // 비밀번호 입력창 표시
+        document.getElementById("pwModal").classList.remove("hidden");
+        document.getElementById("secretPwInput").focus();
+    }
+
+    // ✅ 비밀번호 확인 버튼 클릭 시
+    document.getElementById("confirmBtn").addEventListener("click", async () => {
+        const inputPw = document.getElementById("secretPwInput").value;
+
+        if (!inputPw) {
+            alert("비밀번호를 입력하세요.");
+            return;
+        }
+
+        const res = await fetch(`/board/checkSecretPw?id=${targetBoardId}&secretPw=${encodeURIComponent(inputPw)}`);
+        const result = await res.text();
+
+        if (result === "OK") {
+            window.location.href = `/board/${targetBoardId}/detail`;
+        } else {
+            alert("비밀번호가 일치하지 않습니다 ❌");
+        }
+    });
+
+    function closePwModal() {
+        document.getElementById("pwModal").classList.add("hidden");
+        document.getElementById("secretPwInput").value = "";
+    }
+
+    // ✅ Enter 키로 확인 가능
+    document.getElementById("secretPwInput").addEventListener("keypress", e => {
+        if (e.key === "Enter") document.getElementById("confirmBtn").click();
+    });
 </script>
 </body>
 </html>

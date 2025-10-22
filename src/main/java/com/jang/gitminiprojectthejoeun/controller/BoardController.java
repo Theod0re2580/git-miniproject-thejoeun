@@ -129,13 +129,23 @@ public class BoardController {
             return "redirect:/board/list";
         }
 
-        // ✅ 본인 확인
+        // ✅ 작성자 본인 확인
         if (original.getMemberId() != loggedMember.getId()) {
             redirectAttributes.addFlashAttribute("msg", "작성자만 수정할 수 있습니다.");
             return "redirect:/board/" + boardDto.getId() + "/detail";
         }
 
-        // ✅ 업데이트 실행
+        // ✅ 비밀글 비밀번호 처리
+        if (boardDto.getSecretFlag() == 1) {
+            // 새 비밀번호 입력이 없으면 기존 것을 유지
+            if (boardDto.getSecretPw() == null || boardDto.getSecretPw().isBlank()) {
+                boardDto.setSecretPw(original.getSecretPw());
+            }
+        } else {
+            // 공개글일 경우에도 NULL 방지용으로 회원 비밀번호 넣기
+            boardDto.setSecretPw(loggedMember.getUserPW());
+        }
+
         boardDto.setMemberId(loggedMember.getId());
         int result = boardDao.updateBoard(boardDto);
 
@@ -161,38 +171,37 @@ public class BoardController {
         return "board/write";
     }
 
+    /** ✅ 글쓰기 처리 (secret_pw 포함) */
     @PostMapping("/write")
     public String writeProcess(@Valid BoardDto boardDto,
                                BindingResult bindingResult,
                                HttpSession session,
                                Model model) {
 
-        // 🔹 유효성 검사 (제목/내용 필수 등)
         if (bindingResult.hasErrors()) {
             return "board/write";
         }
 
-        // 🔹 로그인 정보 확인
         MemberDto loggedMember = (MemberDto) session.getAttribute("loggedMember");
         if (loggedMember == null) {
             model.addAttribute("msg", "로그인이 필요합니다.");
             return "redirect:/member/login";
         }
 
-        // 🔹 작성자 및 회원 정보 설정
         boardDto.setMemberId(loggedMember.getId());
 
-        // writer는 DB에 저장되지 않음 (JOIN으로 표시됨)
-        // password도 게시판에서 별도로 사용하지 않음 (회원 userpw 사용)
-
-        // 🔹 비밀글 처리 (체크 안 하면 0)
-        if (boardDto.getSecretFlag() == 0) {
-            boardDto.setSecretFlag(0);
+        // ✅ 비밀글 여부 및 비밀번호 처리
+        if (boardDto.getSecretFlag() == 1) {
+            // 비밀글인데 비밀번호 입력 안 했으면 회원 비밀번호로 대체
+            if (boardDto.getSecretPw() == null || boardDto.getSecretPw().isBlank()) {
+                boardDto.setSecretPw(loggedMember.getUserPW());
+            }
         } else {
-            boardDto.setSecretFlag(1);
+            // 공개글의 경우에도 NOT NULL 충족을 위해 회원 비번 저장
+            boardDto.setSecretFlag(0);
+            boardDto.setSecretPw(loggedMember.getUserPW());
         }
 
-        // 🔹 DB 저장
         int result = boardDao.writeBoard(boardDto);
 
         if (result > 0) {
@@ -268,5 +277,16 @@ public class BoardController {
         List<BoardDto> searchList = boardDao.search(keyword, type);
         model.addAttribute("searchList", searchList);
         return "board/search-list";
+    }
+
+    @GetMapping("/checkSecretPw")
+    @ResponseBody
+    public String checkSecretPw(@RequestParam("id") int id,
+                                @RequestParam("secretPw") String secretPw) {
+        String dbPw = boardDao.getSecretPw(id);
+        if (dbPw != null && dbPw.equals(secretPw)) {
+            return "OK";
+        }
+        return "FAIL";
     }
 }

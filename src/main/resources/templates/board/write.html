@@ -46,19 +46,39 @@
     </div>
 
     <!-- ✅ 비밀글 체크박스 -->
-    <div class="form-control flex flex-row items-center gap-2 mt-4">
-        <input type="checkbox" id="secretFlag" name="secretFlag" value="1"
-               class="checkbox checkbox-primary"/>
-        <label for="secretFlag" class="font-medium">비밀글로 등록하기</label>
+    <div class="form-control flex flex-row items-center gap-2">
+        <input type="checkbox" th:field="*{secretFlag}" value="1" id="secretCheck">
+        <label for="secretCheck">비밀글로 설정</label>
+        <input type="hidden" name="secretFlag" value="0" />
+    </div>
+
+    <!-- 비밀번호 입력창 -->
+    <div class="form-control hidden" id="secretPwContainer">
+        <label class="label"><span class="label-text font-bold mb-2">비밀글 비밀번호</span></label>
+        <input type="password" th:field="*{secretPw}" id="secretPwInput"
+               placeholder="입력하지 않으면 회원 비밀번호로 설정됩니다"
+               class="input input-bordered w-full"/>
     </div>
 
     <!-- 버튼 -->
     <div class="form-control mt-6">
         <button class="btn btn-primary w-full">등록</button>
     </div>
-
+    <div th:replace="~{fragments/footer::footer-sns}"></div>
 </form>
+<script>
+    const check = document.getElementById("secretCheck");
+    const container = document.getElementById("secretPwContainer");
+    const input = document.getElementById("secretPwInput");
 
-<div th:replace="~{fragments/footer::footer-sns}"></div>
+    check.addEventListener("change", () => {
+        if (check.checked) {
+            container.classList.remove("hidden");
+        } else {
+            container.classList.add("hidden");
+            input.value = "";
+        }
+    });
+</script>
 </body>
 </html>

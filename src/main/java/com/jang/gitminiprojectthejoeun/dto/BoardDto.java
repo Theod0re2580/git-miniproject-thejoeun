@@ -21,4 +21,5 @@ public class BoardDto {
     private int hit;
     private String password;
     private int secretFlag; // 🔹 추가 가능
+    private String secretPw; // 비밀글 비밀번호 (NOT NULL)
 }
