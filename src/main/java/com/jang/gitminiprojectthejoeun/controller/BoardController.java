@@ -76,6 +76,19 @@ public class BoardController {
         return "board/list";
     }
 
+    @GetMapping("/{id}/update")
+    public String updateForm(@PathVariable("id") int id, Model model) {
+        BoardDto boardDto = boardDao.findById(id);
+        model.addAttribute("boardDto", boardDto);
+        return "board/update";
+    }
+
+    @PostMapping("/update")
+    public String update(@ModelAttribute BoardDto boardDto) {
+        boardDao.updateBoard(boardDto);
+        return "redirect:/board/" + boardDto.getId() + "/detail";
+    }
+
     @GetMapping("/write")
     public String write(Model model, HttpSession session) {
         //로그인한 사용자면 이름을 넣어서 넘겨주고 아니면 빈 dto내려보내기
@@ -88,27 +101,37 @@ public class BoardController {
         return "board/write";
     }
     @PostMapping("/write")
-    public String writeProcess(@Valid BoardDto boardDto, BindingResult bindingResult, Model model) {
+    public String writeProcess(@Valid BoardDto boardDto, BindingResult bindingResult,
+                               HttpSession session, Model model) {
         if (bindingResult.hasErrors()) {
             return "board/write";
         }
-        System.out.println(boardDto);
-        int result = boardDao.writeBoard(boardDto);
-        if(result > 0) {
-            return "redirect:/board/list";
+
+        MemberDto loggedMember = (MemberDto) session.getAttribute("loggedMember");
+        if (loggedMember != null) {
+            boardDto.setMemberId(loggedMember.getId()); // 🔹 FK 세팅
+            boardDto.setWriter(loggedMember.getUserName()); // 화면 표시용
         }
-        return "board/write";
+
+        int result = boardDao.writeBoard(boardDto);
+        return result > 0 ? "redirect:/board/list" : "board/write";
     }
     @GetMapping("/{id}/detail")
-    public String write(@PathVariable("id") int id, Model model) {
+    public String detail(@PathVariable("id") int id, Model model) {
+
         BoardDto boardDto = boardDao.findById(id);
         BoardDto prevBoardDto = boardDao.findPrev(id);
         BoardDto nextBoardDto = boardDao.findNext(id);
+
+        System.out.println("boardDto = " + boardDto); // ✅ 디버깅용
+
         model.addAttribute("boardDto", boardDto);
         model.addAttribute("prevBoardDto", prevBoardDto);
         model.addAttribute("nextBoardDto", nextBoardDto);
+
         return "board/detail";
     }
+
     @PostMapping("/delete")
     @ResponseBody
     public Map<String, Boolean> delete(@RequestBody BoardDto boardDto) {

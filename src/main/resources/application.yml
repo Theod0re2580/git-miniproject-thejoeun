@@ -1,6 +1,6 @@
 spring:
   application:
-    name: board03
+    name: gitminiprojectthejoeun
   devtools:
     livereload:
       enabled: true
@@ -8,9 +8,9 @@ spring:
       enabled: true
   datasource:
     driver-class-name: oracle.jdbc.OracleDriver
-    url: jdbc:oracle:thin:@localhost:1521:xe  # DB?/??? ?? ??
-    username: springghost                      # Oracle ??? ??
-    password: 1234                             # ????
+    url: jdbc:oracle:thin:@localhost:1521:xe
+    username: springproject
+    password: 1234
 
   thymeleaf:
     cache: false
@@ -23,7 +23,9 @@ spring:
 mybatis:
   mapper-locations: classpath:mybatis/mapper/**/*.xml
   type-aliases-package: com.jang.gitminiprojectthejoeun.dto
-  config-location: classpath:mybatis/config/config.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 server:
   port: 8080

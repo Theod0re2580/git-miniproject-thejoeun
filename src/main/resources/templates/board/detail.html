@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/head::head('글보기')}"></head>
 <body>
 <header th:replace="~{fragments/header}"></header>
+
 <div class="w-full max-w-4xl mx-auto mt-10">
     <h1 class="text-3xl font-bold mb-8 text-center">게시글 상세</h1>
 
@@ -11,34 +12,39 @@
         <!-- 제목 -->
         <tr>
             <th class="w-32 bg-base-200 text-left px-4 py-2">제목</th>
-            <td class="px-4 py-2" th:text="${boardDto.title}"></td>
+            <td class="px-4 py-2" th:text="${boardDto.title}">제목</td>
         </tr>
 
         <!-- 글쓴이 -->
         <tr>
             <th class="bg-base-200 text-left px-4 py-2">글쓴이</th>
-            <td class="px-4 py-2" th:text="${boardDto.writer}"></td>
+            <td class="px-4 py-2" th:text="${boardDto.writer}">작성자</td>
         </tr>
 
         <!-- 내용 -->
         <tr>
             <th class="bg-base-200 text-left px-4 py-2 align-top">내용</th>
-            <td class="px-4 py-2 whitespace-pre-line" th:text="${boardDto.content}"></td>
+            <td class="px-4 py-2 whitespace-pre-line" th:text="${boardDto.content}">내용</td>
         </tr>
 
         <!-- 조회수 -->
         <tr>
             <th class="bg-base-200 text-left px-4 py-2">조회수</th>
-            <td class="px-4 py-2" th:text="${boardDto.hit}"></td>
+            <td class="px-4 py-2" th:text="${boardDto.hit}">0</td>
         </tr>
 
         <!-- 날짜 -->
         <tr>
             <th class="bg-base-200 text-left px-4 py-2">날짜</th>
-            <td class="px-4 py-2" th:text="${boardDto.regdate}"></td>
+            <td class="px-4 py-2" th:text="${#temporals.format(boardDto.regdate, 'yyyy-MM-dd HH:mm')}">2025-10-22</td>
         </tr>
         </tbody>
     </table>
+
+    <!-- 수정하기 버튼 -->
+    <div class="mt-4 text-right">
+        <a th:href="@{/board/{id}/update(id=${boardDto.id})}" class="btn btn-primary">수정하기</a>
+    </div>
 
     <!-- 비밀번호 입력 + 삭제 버튼 -->
     <div class="mt-6">
@@ -52,40 +58,58 @@
 
     <!-- 이전/다음 글 -->
     <div class="mt-6 border-t border-base-300 pt-4 space-y-2">
+
+        <!-- 이전 글 -->
         <div>
-            <a href="" th:href="@{/board/{id}/detail(id=${prevBoardDto.id})}" class="link link-hover text-sm text-gray-600">이전 글 : <span th:text="${prevBoardDto.id}"></span><span th:text="${prevBoardDto.title}">이전 글 제목</span></a>
+            <th:block th:if="${prevBoardDto != null}">
+                <a th:href="@{/board/{id}/detail(id=${prevBoardDto.id})}"
+                   class="link link-hover text-sm text-gray-600">
+                    이전 글 :
+                    <span th:text="${prevBoardDto.title}"></span>
+                </a>
+            </th:block>
+            <th:block th:if="${prevBoardDto == null}">
+                <span class="text-gray-400 text-sm">이전 글이 없습니다.</span>
+            </th:block>
         </div>
+
+        <!-- 다음 글 -->
         <div>
-            <a href="" th:href="@{/board/{id}/detail(id=${nextBoardDto.id})}" class="link link-hover text-sm text-gray-600">다음 글 : <span th:text="${nextBoardDto.id}"></span><span th:text="${nextBoardDto.title}">다음 글 제목</span></a>
+            <th:block th:if="${nextBoardDto != null}">
+                <a th:href="@{/board/{id}/detail(id=${nextBoardDto.id})}"
+                   class="link link-hover text-sm text-gray-600">
+                    다음 글 :
+                    <span th:text="${nextBoardDto.title}"></span>
+                </a>
+            </th:block>
+            <th:block th:if="${nextBoardDto == null}">
+                <span class="text-gray-400 text-sm">다음 글이 없습니다.</span>
+            </th:block>
         </div>
     </div>
 </div>
 
-
 <div th:replace="~{fragments/footer::footer-sns}"></div>
+
 <script th:inline="javascript">
     const btnDelete = document.querySelector("#btn-delete");
     const password = document.querySelector("#password");
-    //타임리프 변수 설정
     const idx = /*[[${boardDto.id}]]*/ 0;
-    console.log(idx);
-    btnDelete.addEventListener("click", async () => {
 
+    btnDelete.addEventListener("click", async () => {
         const sendPassword = password.value;
         const res = await fetch("/board/delete", {
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             method: "post",
-            body: JSON.stringify({password: sendPassword, id: idx})
-        })
+            body: JSON.stringify({ password: sendPassword, id: idx })
+        });
         const data = await res.json();
         if (data.success) {
             location.href = "/board/list";
         } else {
             alert("비밀번호를 확인해주세요");
         }
-    })
+    });
 </script>
 </body>
 </html>
