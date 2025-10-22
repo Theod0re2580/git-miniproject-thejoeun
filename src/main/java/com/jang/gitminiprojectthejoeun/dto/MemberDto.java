@@ -5,6 +5,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.time.LocalDateTime;
+import java.util.Date;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,4 +31,6 @@ public class MemberDto {
     @NotBlank(message = "이메일을 입력하세요.")
     @Email(message = "이메일 형식이 올바르지 않습니다.")
     private String userEmail;
+
+    private LocalDateTime regdate; // ✅ 추가
 }

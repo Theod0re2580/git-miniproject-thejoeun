@@ -59,7 +59,7 @@
                 </choose>
             </if>
         </where>
-        ORDER BY b.id DESC
+        ORDER BY b.regdate DESC, b.id DESC
         OFFSET #{offset} ROWS FETCH NEXT #{size} ROWS ONLY
     </select>
 
@@ -184,5 +184,19 @@
         FROM board b
         JOIN member m ON b.member_id = m.id
         WHERE b.id = #{id}
+    </select>
+
+    <!-- ✅ 회원정보에 리스트에 추가 -->
+    <select id="findByMemberId" resultType="BoardDto">
+        SELECT id, title, regdate, hit, secret_flag
+        FROM board
+        WHERE member_id = #{memberId}
+        ORDER BY id DESC
+        OFFSET #{offset} ROWS FETCH NEXT #{size} ROWS ONLY
+    </select>
+
+    <!-- ✅ 내가 쓴 글 총 개수 -->
+    <select id="countMyPosts" parameterType="int" resultType="int">
+        SELECT COUNT(*) FROM board WHERE member_id = #{memberId}
     </select>
 </mapper>

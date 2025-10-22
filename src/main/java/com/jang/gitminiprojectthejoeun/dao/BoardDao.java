@@ -21,4 +21,9 @@ public interface BoardDao {
     BoardDto findNext(int id);
     int updateBoard(BoardDto boardDto);
     String getSecretPw(int id);
+
+    List<BoardDto> findByMemberId(@Param("memberId") int memberId,
+                                  @Param("offset") int offset,
+                                  @Param("size") int size);
+    int countMyPosts(int memberId);
 }

@@ -35,4 +35,7 @@ public class PageDto {
 
     // 페이징용 offset
     private int offset;
+
+    // ✅ 추가 (내 게시글 조회용)
+    private int memberId;
 }

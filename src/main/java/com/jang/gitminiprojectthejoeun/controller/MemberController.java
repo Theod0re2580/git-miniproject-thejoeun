@@ -1,8 +1,11 @@
 package com.jang.gitminiprojectthejoeun.controller;
 
 import com.jang.gitminiprojectthejoeun.dao.MemberDao;
+import com.jang.gitminiprojectthejoeun.dao.BoardDao;
+import com.jang.gitminiprojectthejoeun.dto.BoardDto;
 import com.jang.gitminiprojectthejoeun.dto.LoginDto;
 import com.jang.gitminiprojectthejoeun.dto.MemberDto;
+import com.jang.gitminiprojectthejoeun.dto.PageDto;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -21,6 +25,7 @@ import java.util.Map;
 public class MemberController {
 
     private final MemberDao memberDao;
+    private final BoardDao boardDao;
 
     // 회원가입 폼
     @GetMapping("/signup")
@@ -116,9 +121,42 @@ public class MemberController {
 
     // 회원정보 페이지
     @GetMapping("/info")
-    public String info() {
+    public String info(
+            HttpSession session,
+            @ModelAttribute("pageDto") PageDto pageDto,
+            Model model) {
+
+        MemberDto loggedMember = (MemberDto) session.getAttribute("loggedMember");
+        if (loggedMember == null) {
+            return "redirect:/member/login";
+        }
+
+        int memberId = loggedMember.getId();
+        int page = pageDto.getPage();
+        int size = pageDto.getSize();
+
+        // ✅ 전체 게시글 수
+        int totalPosts = boardDao.countMyPosts(memberId);
+        int totalPages = (int) Math.ceil((double) totalPosts / size);
+        int offset = (page - 1) * size;
+
+        // ✅ 페이지 관련 정보 세팅
+        pageDto.setOffset(offset);
+        pageDto.setTotal(totalPosts);
+        pageDto.setTotalPages(totalPages);
+        pageDto.setHasPrev(page > 1);
+        pageDto.setHasNext(page < totalPages);
+
+        // ✅ 내가 쓴 글 목록 조회
+        List<BoardDto> myBoardList = boardDao.findByMemberId(memberId, offset, size);
+
+        model.addAttribute("member", loggedMember);
+        model.addAttribute("myBoardList", myBoardList);
+        model.addAttribute("responsePageDto", pageDto);
+
         return "member/info";
     }
+
 
     @GetMapping("/update")
     public String updateForm(HttpSession session, Model model, RedirectAttributes ra) {

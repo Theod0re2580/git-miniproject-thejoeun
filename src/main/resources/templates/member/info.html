@@ -1,17 +1,100 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head::head('회원가입')}"></head>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head::head('회원정보')}"></head>
 <body>
 <header th:replace="~{fragments/header}"></header>
-<!-- 제목 -->
-<div class="max-w-2xl mx-auto space-y-4">
-    <h1 class="text-3xl my-10">회원가입</h1>
-    <div th:text="${session.loggedMember.userID}">장성호</div>
-    <div th:text="${session.loggedMember.userName}">장성호</div>
-    <div th:text="${session.loggedMember.userEmail}">장성호</div>
-    <div><a th:href="@{../member/delete}" href="" class="btn btn-primary">회원탈퇴</a>
-        <a th:href="@{/member/update}" class="btn btn-primary">회원정보 수정</a>
+
+<div class="max-w-4xl mx-auto mt-10 space-y-10">
+
+    <!-- ✅ 회원 정보 -->
+    <section class="border p-6 rounded-lg bg-base-200">
+        <h1 class="text-3xl font-bold mb-6">회원 정보</h1>
+        <div class="space-y-2 text-lg">
+            <p><strong>아이디:</strong> <span th:text="${member.userID}"></span></p>
+            <p><strong>이름:</strong> <span th:text="${member.userName}"></span></p>
+            <p><strong>이메일:</strong> <span th:text="${member.userEmail}"></span></p>
+            <p><strong>가입일:</strong>
+                <span th:text="${#temporals.format(member.regdate, 'yyyy-MM-dd')}"></span>
+            </p>
+        </div>
+        <div class="mt-5 flex gap-3">
+            <a th:href="@{/member/delete}" class="btn btn-error">회원탈퇴</a>
+            <a th:href="@{/member/update}" class="btn btn-primary">회원정보 수정</a>
+        </div>
+    </section>
+
+    <!-- ✅ 내가 쓴 게시글 목록 -->
+    <section>
+        <h2 class="text-2xl font-bold mb-4">내가 쓴 글 ✏️</h2>
+
+        <!-- 게시글이 없을 경우 -->
+        <div th:if="${#lists.isEmpty(myBoardList)}" class="text-gray-500 text-center py-10">
+            작성한 게시글이 없습니다.
+        </div>
+
+        <!-- 게시글이 있을 경우 -->
+        <div th:unless="${#lists.isEmpty(myBoardList)}">
+            <table class="table table-zebra w-full border border-base-300">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>제목</th>
+                    <th>작성일</th>
+                    <th>조회수</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="post : ${myBoardList}">
+                    <td th:text="${post.id}"></td>
+                    <td>
+                        <a th:href="@{/board/{id}/detail(id=${post.id})}"
+                           class="link link-hover font-medium"
+                           th:text="${post.title}"></a>
+                        <span th:if="${post.secretFlag == 1}" class="text-error ml-1">🔒</span>
+                    </td>
+                    <td th:text="${#temporals.format(post.regdate, 'yyyy-MM-dd')}"></td>
+                    <td th:text="${post.hit}"></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <!-- ✅ 페이지네이션 -->
+            <nav class="my-5 flex justify-center">
+                <div class="join">
+
+                    <!-- 이전 버튼 -->
+                    <a class="join-item btn"
+                       th:href="@{/member/info(page=${responsePageDto.page - 1}, size=${responsePageDto.size})}"
+                       th:classappend="${!responsePageDto.hasPrev} ? 'btn-disabled'">
+                        이전
+                    </a>
+
+                    <!-- 페이지 번호 -->
+                    <th:block
+                            th:each="num : ${#numbers.sequence(responsePageDto.getStartPage(5), responsePageDto.getEndPage(5))}">
+                        <a class="join-item btn"
+                           th:text="${num}"
+                           th:href="@{/member/info(page=${num}, size=${responsePageDto.size})}"
+                           th:classappend="${num == responsePageDto.page} ? 'btn-primary'">
+                        </a>
+                    </th:block>
+
+                    <!-- 다음 버튼 -->
+                    <a class="join-item btn"
+                       th:href="@{/member/info(page=${responsePageDto.page + 1}, size=${responsePageDto.size})}"
+                       th:classappend="${!responsePageDto.hasNext} ? 'btn-disabled'">
+                        다음
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </section>
+
+    <div class="text-center">
+        <a th:href="@{/board/list}" class="btn btn-outline mt-5">게시판으로 이동</a>
     </div>
 </div>
+
+<div th:replace="~{fragments/footer::footer-sns}"></div>
 </body>
 </html>
