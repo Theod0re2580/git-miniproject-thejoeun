@@ -3,50 +3,32 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jang.gitminiprojectthejoeun.dao.MemberDao">
-
-    <insert id="signup" parameterType="com.jang.gitminiprojectthejoeun.dto.MemberDto">
-        <![CDATA[
-        INSERT INTO member (id,userID,userPW,userName,userEmail) VALUES
-        (member_seq.nextval, #{userID}, #{userPW}, #{userName}, #{userEmail})
-        ]]>
+    <insert id="signup" parameterType="MemberDto">
+        insert into member (id,userID,userPW,userName,userEmail) values
+        (member_seq.nextval,#{userID},#{userPW},#{userName},#{userEmail})
     </insert>
-
-    <select id="idCheck" parameterType="com.jang.gitminiprojectthejoeun.dto.MemberDto" resultType="int">
-        <![CDATA[
-        SELECT COUNT(*) AS count FROM member WHERE userID = #{userID}
-        ]]>
+    <select id="idCheck" parameterType="MemberDto" resultType="int">
+        SELECT count(*) AS count FROM MEMBER WHERE userid = #{userID}
     </select>
-
     <!-- USERID 중복 체크 -->
-    <select id="existsUserId" parameterType="java.lang.String" resultType="int">
-        <![CDATA[
-        SELECT COUNT(*) FROM member WHERE userID = #{userID}
-        ]]>
+    <select id="existsUserId" parameterType="string" resultType="int">
+        SELECT COUNT(*)
+        FROM member
+        WHERE userID = #{userID}
     </select>
 
     <!-- EMAIL 중복 체크 -->
-    <select id="existsEmail" parameterType="java.lang.String" resultType="int">
-        <![CDATA[
-        SELECT COUNT(*) FROM member WHERE userEmail = #{userEmail}
-        ]]>
+    <select id="existsEmail" parameterType="string" resultType="int">
+        SELECT COUNT(*)
+        FROM member
+        WHERE userEmail = #{userEmail}
     </select>
-
-    <!-- 이전글 (Oracle 버전) -->
-    <select id="getPrevBoard" parameterType="int" resultType="com.jang.gitminiprojectthejoeun.dto.BoardDto">
-        <![CDATA[
-        SELECT * FROM (
-            SELECT * FROM board WHERE board_no < #{board_no} ORDER BY board_no DESC
-        ) WHERE ROWNUM = 1
-        ]]>
+    <select id="login" parameterType="LoginDto" resultType="MemberDto">
+        SELECT *
+        FROM member
+        WHERE userID = #{userID} AND userPW = #{userPW}
     </select>
-
-    <!-- 다음글 (Oracle 버전) -->
-    <select id="getNextBoard" parameterType="int" resultType="com.jang.gitminiprojectthejoeun.dto.BoardDto">
-        <![CDATA[
-        SELECT * FROM (
-            SELECT * FROM board WHERE board_no > #{board_no} ORDER BY board_no ASC
-        ) WHERE ROWNUM = 1
-        ]]>
-    </select>
-
+    <delete id="deleteMember" parameterType="LoginDto">
+        delete from member where userID =#{userID} and userPW = #{userPW}
+    </delete>
 </mapper>

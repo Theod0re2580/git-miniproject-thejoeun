@@ -30,7 +30,7 @@
         SELECT id,writer,title,content,regdate,hit, password
         FROM board
         <include refid="seachWhere"></include>
-        ORDER BY regdate DESC
+        ORDER BY ID DESC
         OFFSET #{page} ROWS FETCH NEXT #{size} ROWS ONLY
     </select>
     <select id="findById" resultType="BoardDto" parameterType="int">
@@ -60,5 +60,19 @@
                 </when>
             </choose>
         </where>
+    </select>
+    <select id="findPrev" parameterType="int" resultType="BoardDto">
+        <![CDATA[
+            SELECT * FROM board WHERE id < #{id}
+            ORDER BY id desc
+            FETCH FIRST 1 ROWS ONLY
+        ]]>
+    </select>
+    <select id="findNext" parameterType="int" resultType="BoardDto">
+        <![CDATA[
+            SELECT * FROM board WHERE id > #{id}
+            ORDER BY id asc
+            FETCH FIRST 1 ROWS ONLY
+        ]]>
     </select>
 </mapper>

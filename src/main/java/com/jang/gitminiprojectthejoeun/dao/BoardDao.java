@@ -17,6 +17,6 @@ public interface BoardDao {
     int totalBoard(PageDto pageDto);
     List<BoardDto> search(@Param("keyword") String keyword,
                           @Param("type") String type);
-    BoardDto getPrevBoard(int boardNo);
-    BoardDto getNextBoard(int boardNo);
+    BoardDto findPrev(int id);
+    BoardDto findNext(int id);
 }

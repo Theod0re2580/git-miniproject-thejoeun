@@ -3,55 +3,65 @@
 <head th:replace="~{fragments/head::head('글보기')}"></head>
 <body>
 <header th:replace="~{fragments/header}"></header>
-<div class="card w-full max-w-2xl shadow-2xl bg-base-100 mx-auto mt-10">
-    <div class="card-body">
-        <h1 class="card-title text-2xl mb-4">게시글 상세</h1>
+<div class="w-full max-w-4xl mx-auto mt-10">
+    <h1 class="text-3xl font-bold mb-8 text-center">게시글 상세</h1>
 
+    <table class="table w-full border border-base-300">
+        <tbody>
         <!-- 제목 -->
-        <div class="form-control mb-2">
-            <label class="label font-bold">제목</label>
-            <span class="px-3 py-2 rounded bg-base-200" th:text="${boardDto.title}"></span>
-        </div>
+        <tr>
+            <th class="w-32 bg-base-200 text-left px-4 py-2">제목</th>
+            <td class="px-4 py-2" th:text="${boardDto.title}"></td>
+        </tr>
 
         <!-- 글쓴이 -->
-        <div class="form-control mb-2">
-            <label class="label font-bold">글쓴이</label>
-            <span class="px-3 py-2 rounded bg-base-200" th:text="${boardDto.writer}"></span>
-        </div>
+        <tr>
+            <th class="bg-base-200 text-left px-4 py-2">글쓴이</th>
+            <td class="px-4 py-2" th:text="${boardDto.writer}"></td>
+        </tr>
 
         <!-- 내용 -->
-        <div class="form-control mb-2">
-            <label class="label font-bold">내용</label>
-            <span class="px-3 py-2 rounded bg-base-200 whitespace-pre-line" th:text="${boardDto.content}"></span>
-        </div>
+        <tr>
+            <th class="bg-base-200 text-left px-4 py-2 align-top">내용</th>
+            <td class="px-4 py-2 whitespace-pre-line" th:text="${boardDto.content}"></td>
+        </tr>
 
         <!-- 조회수 -->
-        <div class="form-control mb-2">
-            <label class="label font-bold">조회수</label>
-            <span class="px-3 py-2 rounded bg-base-200" th:text="${boardDto.hit}"></span>
-        </div>
+        <tr>
+            <th class="bg-base-200 text-left px-4 py-2">조회수</th>
+            <td class="px-4 py-2" th:text="${boardDto.hit}"></td>
+        </tr>
 
         <!-- 날짜 -->
-        <div class="form-control mb-4">
-            <label class="label font-bold">날짜</label>
-            <span class="px-3 py-2 rounded bg-base-200" th:text="${boardDto.regdate}"></span>
-        </div>
+        <tr>
+            <th class="bg-base-200 text-left px-4 py-2">날짜</th>
+            <td class="px-4 py-2" th:text="${boardDto.regdate}"></td>
+        </tr>
+        </tbody>
+    </table>
 
-        <!-- 비밀번호 입력 + 삭제 버튼 -->
-        <div class="form-control">
-            <label class="label font-bold">삭제 비밀번호</label>
-            <div class="flex gap-2">
-                <input type="password" name="password" id="password" placeholder="password"
-                       class="input input-bordered w-full"/>
-                <button id="btn-delete" class="btn btn-error">삭제</button>
-            </div>
+    <!-- 비밀번호 입력 + 삭제 버튼 -->
+    <div class="mt-6">
+        <label class="block font-bold mb-1">삭제 비밀번호</label>
+        <div class="flex gap-2">
+            <input type="password" name="password" id="password" placeholder="password"
+                   class="input input-bordered w-full"/>
+            <button id="btn-delete" class="btn btn-error">삭제</button>
+        </div>
+    </div>
+
+    <!-- 이전/다음 글 -->
+    <div class="mt-6 border-t border-base-300 pt-4 space-y-2">
+        <div>
+            <a href="" th:href="@{/board/{id}/detail(id=${prevBoardDto.id})}" class="link link-hover text-sm text-gray-600">이전 글 : <span th:text="${prevBoardDto.id}"></span><span th:text="${prevBoardDto.title}">이전 글 제목</span></a>
         </div>
         <div>
-            <div><a href="">이전 글 : 이전 글 제목</a></div>
-            <div><a href="">다음 글 : 다음 글 제목</a></div>
+            <a href="" th:href="@{/board/{id}/detail(id=${nextBoardDto.id})}" class="link link-hover text-sm text-gray-600">다음 글 : <span th:text="${nextBoardDto.id}"></span><span th:text="${nextBoardDto.title}">다음 글 제목</span></a>
         </div>
     </div>
 </div>
+
+
 <div th:replace="~{fragments/footer::footer-sns}"></div>
 <script th:inline="javascript">
     const btnDelete = document.querySelector("#btn-delete");

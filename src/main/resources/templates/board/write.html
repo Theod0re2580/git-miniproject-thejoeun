@@ -7,10 +7,10 @@
 <form action="../board/write" method="post" th:object="${boardDto}" class="max-w-2xl mx-auto mt-10 space-y-4">
 
     <!-- 제목 -->
-    <h1 class="text-3xl mb-">글쓰기</h1>
+    <h1 class="text-3xl my-10 font-bold">글쓰기</h1>
     <div class="form-control">
         <label class="label">
-            <span class="label-text font-bold">제목</span>
+            <span class="label-text font-bold mb-2">제목</span>
         </label>
         <input type="text" th:field="*{title}" placeholder="제목을 입력하세요"
                class="input input-bordered w-full"/>
@@ -22,7 +22,7 @@
     <!-- 글쓴이 -->
     <div class="form-control">
         <label class="label">
-            <span class="label-text font-bold">글쓴이</span>
+            <span class="label-text font-bold mb-2">글쓴이</span>
         </label>
         <input type="text" th:field="*{writer}" placeholder="작성자 이름"
                class="input input-bordered w-full" th:value="${session.loggedMember.userName}"/>
@@ -34,7 +34,7 @@
     <!-- 내용 -->
     <div class="form-control">
         <label class="label">
-            <span class="label-text font-bold">내용</span>
+            <span class="label-text font-bold mb-2">내용</span>
         </label>
         <textarea th:field="*{content}" placeholder="내용을 입력하세요"
                   class="textarea textarea-bordered h-32 w-full"></textarea>
@@ -46,7 +46,7 @@
     <!-- 비밀번호 -->
     <div class="form-control">
         <label class="label">
-            <span class="label-text font-bold">비밀번호</span>
+            <span class="label-text font-bold mb-2">비밀번호</span>
         </label>
         <input type="password" th:field="*{password}" placeholder="비밀번호 입력"
                class="input input-bordered w-full"/>

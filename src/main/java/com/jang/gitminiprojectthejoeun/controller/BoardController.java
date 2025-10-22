@@ -27,7 +27,7 @@ public class BoardController {
     @GetMapping("/list")
     public String list(Model model,
                        @ModelAttribute("pageDto")  PageDto pageDto
-    )
+                       )
     {
         int page =  pageDto.getPage();
         int size =  pageDto.getSize();
@@ -102,7 +102,11 @@ public class BoardController {
     @GetMapping("/{id}/detail")
     public String write(@PathVariable("id") int id, Model model) {
         BoardDto boardDto = boardDao.findById(id);
+        BoardDto prevBoardDto = boardDao.findPrev(id);
+        BoardDto nextBoardDto = boardDao.findNext(id);
         model.addAttribute("boardDto", boardDto);
+        model.addAttribute("prevBoardDto", prevBoardDto);
+        model.addAttribute("nextBoardDto", nextBoardDto);
         return "board/detail";
     }
     @PostMapping("/delete")
