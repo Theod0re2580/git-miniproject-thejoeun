@@ -4,19 +4,20 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jang.gitminiprojectthejoeun.dao.BoardDao">
 
-    <!-- 게시글 작성 -->
+    <!-- ✅ 게시글 작성 -->
     <insert id="writeBoard" parameterType="BoardDto">
-        INSERT INTO board (id, member_id, title, content, secret_flag, regdate, hit)
-        VALUES (board_seq.NEXTVAL, #{memberId}, #{title}, #{content}, #{secretFlag}, SYSDATE, 0)
+        INSERT INTO board (id, member_id, title, content, secret_flag)
+        VALUES (board_seq.nextval, #{memberId}, #{title}, #{content}, #{secretFlag})
     </insert>
 
-    <!-- 게시글 전체 조회 -->
+    <!-- ✅ 게시글 전체 조회 -->
     <select id="findAll" parameterType="PageDto" resultType="BoardDto">
         SELECT b.id,
         b.title,
         b.content,
         b.regdate,
         b.hit,
+        b.secret_flag,
         m.username AS writer
         FROM board b
         JOIN member m ON b.member_id = m.id
@@ -32,13 +33,13 @@
                     <when test="type == 'writer'">
                         AND LOWER(m.username) LIKE '%' || LOWER(#{keyword}) || '%'
                     </when>
-                    <when test="type == 'all' or type == null or type == ''">
+                    <otherwise>
                         AND (
                         LOWER(b.title) LIKE '%' || LOWER(#{keyword}) || '%'
                         OR LOWER(b.content) LIKE '%' || LOWER(#{keyword}) || '%'
                         OR LOWER(m.username) LIKE '%' || LOWER(#{keyword}) || '%'
                         )
-                    </when>
+                    </otherwise>
                 </choose>
             </if>
         </where>
@@ -46,7 +47,7 @@
         OFFSET #{offset} ROWS FETCH NEXT #{size} ROWS ONLY
     </select>
 
-    <!-- 게시글 상세 조회 -->
+    <!-- ✅ 게시글 상세 조회 -->
     <select id="findById" resultType="BoardDto" parameterType="int">
         SELECT b.id,
         b.member_id,
@@ -61,32 +62,28 @@
         WHERE b.id = #{id}
     </select>
 
-    <!-- 게시글 삭제 (member.userpw 확인 방식) -->
-    <!-- 글쓴이 본인만 삭제 가능 -->
+    <!-- ✅ 게시글 삭제 (로그인 사용자 본인만) -->
     <delete id="deleteBoard" parameterType="BoardDto">
         <![CDATA[
-        DELETE FROM board
-        WHERE id = #{id}
-          AND member_id = (
-              SELECT m.id
-              FROM member m
-              WHERE m.userid = #{writer}
-                AND m.userpw = #{password}
-          )
-    ]]>
+            DELETE FROM board
+            WHERE id = #{id}
+              AND member_id = #{memberId}
+        ]]>
     </delete>
 
+    <!-- ✅ 게시글 수정 -->
     <update id="updateBoard" parameterType="BoardDto">
         <![CDATA[
-    UPDATE board
-       SET title = #{title},
-           content = #{content},
-           regdate = SYSDATE
-     WHERE id = #{id}
-       AND member_id = #{memberId}
-    ]]>
+            UPDATE board
+               SET title = #{title},
+                   content = #{content},
+                   regdate = SYSDATE
+             WHERE id = #{id}
+               AND member_id = #{memberId}
+        ]]>
     </update>
 
+    <!-- ✅ 게시글 개수 (검색 포함) -->
     <select id="totalBoard" parameterType="PageDto" resultType="int">
         SELECT COUNT(*)
         FROM board b
@@ -103,39 +100,37 @@
                     <when test="type == 'writer'">
                         AND LOWER(m.username) LIKE '%' || LOWER(#{keyword}) || '%'
                     </when>
-                    <when test="type == 'all' or type == null or type == ''">
+                    <otherwise>
                         AND (
                         LOWER(b.title) LIKE '%' || LOWER(#{keyword}) || '%'
                         OR LOWER(b.content) LIKE '%' || LOWER(#{keyword}) || '%'
                         OR LOWER(m.username) LIKE '%' || LOWER(#{keyword}) || '%'
                         )
-                    </when>
+                    </otherwise>
                 </choose>
             </if>
         </where>
     </select>
-
 
     <!-- ✅ 이전 글 -->
     <select id="findPrev" parameterType="int" resultType="BoardDto">
         <![CDATA[
             SELECT *
             FROM (
-            SELECT b.id,
-            b.title,
-            b.content,
-            b.regdate,
-            b.hit,
-            b.member_id,
-            m.username AS writer
-            FROM board b
-            JOIN member m ON b.member_id = m.id
-            WHERE b.id < #{id}
-            ORDER BY b.id DESC
+                SELECT b.id,
+                       b.title,
+                       b.content,
+                       b.regdate,
+                       b.hit,
+                       b.secret_flag,
+                       m.username AS writer
+                FROM board b
+                JOIN member m ON b.member_id = m.id
+                WHERE b.id < #{id}
+                ORDER BY b.id DESC
             )
             WHERE ROWNUM = 1
         ]]>
-
     </select>
 
     <!-- ✅ 다음 글 -->
@@ -143,19 +138,20 @@
         <![CDATA[
             SELECT *
             FROM (
-            SELECT b.id,
-            b.title,
-            b.content,
-            b.regdate,
-            b.hit,
-            b.member_id,
-            m.username AS writer
-            FROM board b
-            JOIN member m ON b.member_id = m.id
-            WHERE b.id > #{id}
-            ORDER BY b.id ASC
+                SELECT b.id,
+                       b.title,
+                       b.content,
+                       b.regdate,
+                       b.hit,
+                       b.secret_flag,
+                       m.username AS writer
+                FROM board b
+                JOIN member m ON b.member_id = m.id
+                WHERE b.id > #{id}
+                ORDER BY b.id ASC
             )
             WHERE ROWNUM = 1
         ]]>
     </select>
+
 </mapper>

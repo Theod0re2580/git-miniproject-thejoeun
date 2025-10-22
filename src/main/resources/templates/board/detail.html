@@ -12,7 +12,10 @@
         <!-- 제목 -->
         <tr>
             <th class="w-32 bg-base-200 text-left px-4 py-2">제목</th>
-            <td class="px-4 py-2" th:text="${boardDto.title}">제목</td>
+            <td class="px-4 py-2">
+                <span th:text="${boardDto.title}">제목</span>
+                <span th:if="${boardDto.secretFlag == 1}" class="text-error font-bold ml-1">🔒 비밀글</span>
+            </td>
         </tr>
 
         <!-- 글쓴이 -->
@@ -41,19 +44,11 @@
         </tbody>
     </table>
 
-    <!-- 수정하기 버튼 -->
-    <div class="mt-4 text-right">
+    <!-- 수정/삭제 버튼 (로그인 + 본인일 경우만 표시) -->
+    <div class="mt-6 flex justify-end gap-2"
+         th:if="${session.loggedMember != null and session.loggedMember.userName == boardDto.writer}">
         <a th:href="@{/board/{id}/update(id=${boardDto.id})}" class="btn btn-primary">수정하기</a>
-    </div>
-
-    <!-- 비밀번호 입력 + 삭제 버튼 -->
-    <div class="mt-6">
-        <label class="block font-bold mb-1">삭제 비밀번호</label>
-        <div class="flex gap-2">
-            <input type="password" name="password" id="password" placeholder="password"
-                   class="input input-bordered w-full"/>
-            <button id="btn-delete" class="btn btn-error">삭제</button>
-        </div>
+        <button id="btn-delete" class="btn btn-error">삭제하기</button>
     </div>
 
     <!-- 이전/다음 글 -->
@@ -92,33 +87,27 @@
 <div th:replace="~{fragments/footer::footer-sns}"></div>
 
 <script th:inline="javascript">
-    const btnDelete = document.querySelector("#btn-delete");
-    const password = document.querySelector("#password");
-    const idx = /*[[${boardDto.id}]]*/ 0;
     const msg = /*[[${msg}]]*/ null;
-    if (msg) {
-        alert(msg);
-    }
+    if (msg) alert(msg);
 
-    btnDelete.addEventListener("click", async () => {
-        const sendPassword = password.value.trim();
-        if (!sendPassword) {
-            alert("비밀번호를 입력해주세요.");
-            return;
-        }
+    const btnDelete = document.querySelector("#btn-delete");
+    const boardId = /*[[${boardDto.id}]]*/ 0;
 
-        const res = await fetch("/board/delete", {
-            headers: { "Content-Type": "application/json" },
-            method: "POST",
-            body: JSON.stringify({ id: idx, password: sendPassword })
+    if (btnDelete) {
+        btnDelete.addEventListener("click", async () => {
+            if (!confirm("정말 삭제하시겠습니까?")) return;
+
+            const res = await fetch("/board/delete", {
+                headers: { "Content-Type": "application/json" },
+                method: "POST",
+                body: JSON.stringify({ id: boardId })
+            });
+
+            const data = await res.json();
+            alert(data.message);
+            if (data.success) location.href = "/board/list";
         });
-
-        const data = await res.json();
-        alert(data.message);
-        if (data.success) {
-            location.href = "/board/list";
-        }
-    });
+    }
 </script>
 </body>
 </html>

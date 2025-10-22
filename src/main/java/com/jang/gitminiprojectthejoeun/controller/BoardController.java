@@ -162,21 +162,48 @@ public class BoardController {
     }
 
     @PostMapping("/write")
-    public String writeProcess(@Valid BoardDto boardDto, BindingResult bindingResult,
-                               HttpSession session, Model model) {
+    public String writeProcess(@Valid BoardDto boardDto,
+                               BindingResult bindingResult,
+                               HttpSession session,
+                               Model model) {
+
+        // 🔹 유효성 검사 (제목/내용 필수 등)
         if (bindingResult.hasErrors()) {
             return "board/write";
         }
 
+        // 🔹 로그인 정보 확인
         MemberDto loggedMember = (MemberDto) session.getAttribute("loggedMember");
-        if (loggedMember != null) {
-            boardDto.setMemberId(loggedMember.getId());
-            boardDto.setWriter(loggedMember.getUserName());
+        if (loggedMember == null) {
+            model.addAttribute("msg", "로그인이 필요합니다.");
+            return "redirect:/member/login";
         }
 
+        // 🔹 작성자 및 회원 정보 설정
+        boardDto.setMemberId(loggedMember.getId());
+
+        // writer는 DB에 저장되지 않음 (JOIN으로 표시됨)
+        // password도 게시판에서 별도로 사용하지 않음 (회원 userpw 사용)
+
+        // 🔹 비밀글 처리 (체크 안 하면 0)
+        if (boardDto.getSecretFlag() == 0) {
+            boardDto.setSecretFlag(0);
+        } else {
+            boardDto.setSecretFlag(1);
+        }
+
+        // 🔹 DB 저장
         int result = boardDao.writeBoard(boardDto);
-        return result > 0 ? "redirect:/board/list" : "board/write";
+
+        if (result > 0) {
+            model.addAttribute("msg", "게시글이 등록되었습니다 ✅");
+            return "redirect:/board/list";
+        } else {
+            model.addAttribute("msg", "게시글 등록 중 오류가 발생했습니다 ❌");
+            return "board/write";
+        }
     }
+
 
     @GetMapping("/{id}/detail")
     public String detail(@PathVariable("id") int id, Model model, @ModelAttribute("msg") String msg) {
@@ -204,19 +231,35 @@ public class BoardController {
             return result;
         }
 
-        dto.setWriter(loginUser.getUserID());
-        int deleted = boardDao.deleteBoard(dto);
+        // 🔹 세션 회원 ID를 설정
+        dto.setMemberId(loginUser.getId());
 
+        // 🔹 본인 글인지 확인
+        BoardDto board = boardDao.findById(dto.getId());
+        if (board == null) {
+            result.put("success", false);
+            result.put("message", "게시글을 찾을 수 없습니다.");
+            return result;
+        }
+
+        if (board.getMemberId() != loginUser.getId()) {
+            result.put("success", false);
+            result.put("message", "작성자만 삭제할 수 있습니다.");
+            return result;
+        }
+
+        int deleted = boardDao.deleteBoard(dto);
         if (deleted > 0) {
             result.put("success", true);
-            result.put("message", "게시글이 삭제되었습니다.");
+            result.put("message", "게시글이 삭제되었습니다 ✅");
         } else {
             result.put("success", false);
-            result.put("message", "비밀번호가 일치하지 않거나 작성자만 삭제할 수 있습니다.");
+            result.put("message", "삭제 중 오류가 발생했습니다 ❌");
         }
 
         return result;
     }
+
 
     @GetMapping("/search")
     public String search(@RequestParam(value = "keyword", defaultValue = "") String keyword,

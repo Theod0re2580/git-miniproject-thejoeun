@@ -5,6 +5,7 @@
 <header th:replace="~{fragments/header}"></header>
 
 <div class="overflow-x-auto max-w-6xl mx-auto mt-10">
+
     <!-- 게시글이 존재할 경우 -->
     <th:block th:if="${!boardList.isEmpty()}">
         <table class="table table-zebra w-full border border-base-300">
@@ -30,8 +31,11 @@
                 <!-- 제목 -->
                 <td>
                     <a th:href="@{/board/{id}/detail(id=${item.id})}"
-                       class="link link-hover"
-                       th:text="${item.title}">제목</a>
+                       class="link link-hover font-medium">
+                        <span th:text="${item.title}">제목</span>
+                        <!-- 🔒 비밀글 표시 -->
+                        <span th:if="${item.secretFlag == 1}" class="text-error font-bold ml-1">🔒</span>
+                    </a>
                 </td>
 
                 <!-- 작성자 (JOIN된 MEMBER.username AS writer) -->
@@ -63,8 +67,7 @@
                 </a>
 
                 <!-- 페이지 번호 -->
-                <th:block
-                        th:each="num : ${#numbers.sequence(responsePageDto.getStartPage(5), responsePageDto.getEndPage(5))}">
+                <th:block th:each="num : ${#numbers.sequence(responsePageDto.getStartPage(5), responsePageDto.getEndPage(5))}">
                     <a class="join-item btn"
                        th:text="${num}"
                        th:classappend="${num == responsePageDto.page} ? 'btn-primary'"
@@ -128,11 +131,9 @@
 </div>
 
 <div th:replace="~{fragments/footer::footer-sns}"></div>
-</body>
-</html>
 <script th:inline="javascript">
     const msg = /*[[${msg}]]*/ null;
-    if (msg) {
-        alert(msg);
-    }
+    if (msg) alert(msg);
 </script>
+</body>
+</html>
