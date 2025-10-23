@@ -1,26 +1,30 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/head::head('회원탈퇴')}"></head>
-<body class="flex flex-col min-h-screen pt-20 pb-28 bg-base-100">
+<link rel="stylesheet" th:href="@{/css/member-delete.css}">
+<body class="flex flex-col min-h-screen bg-base-100">
 
 <header th:replace="~{fragments/header}"></header>
 
 <main class="flex-grow pt-24 pb-28">
-    <form action="../member/delete" method="post" class="max-w-2xl mx-auto space-y-4">
-        <h1 class="text-3xl my-10 text-center font-bold">회원탈퇴</h1>
+    <div id="section">
+        <h1>회원탈퇴</h1>
 
-        <div class="form-control">
-            <label class="label mb-2">
-                <span class="label-text font-bold">PASSWORD</span>
-            </label>
-            <input type="password" placeholder="비밀번호 입력" name="userPW"
-                   class="input input-bordered w-full"/>
+        <div class="warning">
+            ⚠️ 탈퇴 시 작성하신 게시글은 유지되며, 계정 정보는 완전히 삭제됩니다.
         </div>
 
-        <div class="form-control mt-6">
-            <button class="btn btn-error w-full">회원탈퇴</button>
-        </div>
-    </form>
+        <form action="../member/delete" method="post">
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">PASSWORD</span>
+                </label>
+                <input type="password" placeholder="비밀번호를 입력하세요" name="userPW" required>
+            </div>
+
+            <button type="submit" class="btn-delete">회원탈퇴</button>
+        </form>
+    </div>
 </main>
 
 <footer th:replace="~{fragments/footer::footer-sns}"></footer>

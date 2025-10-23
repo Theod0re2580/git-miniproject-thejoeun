@@ -1,0 +1,121 @@
+/* =========================
+   📄 게시글 상세 (detail.css)
+   ========================= */
+
+/* 전체 배경 & 본문 중앙 정렬 */
+main {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 80vh;
+    background-color: #f9fafb;
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+}
+
+/* 메인 컨테이너 */
+.detail-container {
+    width: 100%;
+    max-width: 850px;
+    background-color: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    padding: 3rem 4rem;
+}
+
+/* 제목 */
+.detail-container h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #222;
+}
+
+/* 테이블 */
+.detail-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 2rem;
+}
+
+.detail-table th,
+.detail-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.detail-table th {
+    width: 20%;
+    background-color: #f3f4f6;
+    text-align: left;
+    font-weight: 600;
+    color: #333;
+}
+
+.detail-table td {
+    color: #444;
+    line-height: 1.6;
+    white-space: pre-line;
+}
+
+/* 수정 / 삭제 버튼 */
+.detail-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.8rem;
+    margin-top: 1.5rem;
+}
+
+.detail-actions .btn {
+    padding: 0.6rem 1.2rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: 0.2s ease;
+}
+
+.btn-primary {
+    background-color: #6366f1;
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background-color: #4f46e5;
+}
+
+.btn-error {
+    background-color: #ef4444;
+    color: #fff;
+}
+
+.btn-error:hover {
+    background-color: #dc2626;
+}
+
+/* 이전글 / 다음글 */
+.nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.nav-buttons a {
+    display: inline-block;
+    background-color: #fff;
+    border: 1px solid #d1d5db;
+    color: #374151;
+    padding: 0.7rem 1.3rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: 0.2s ease;
+}
+
+.nav-buttons a:hover {
+    background-color: #6366f1;
+    border-color: #6366f1;
+    color: #fff;
+}

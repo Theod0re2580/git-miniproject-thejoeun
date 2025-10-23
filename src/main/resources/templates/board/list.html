@@ -103,7 +103,7 @@
             <input type="password" id="secretPwInput" placeholder="비밀번호 입력"
                    class="input input-bordered w-full mb-3"/>
             <div class="flex justify-center gap-3">
-                <button id="confirmBtn" class="btn btn-primary w-24">확인</button>
+                <button id="confirmBtn" class="btn btn-primary w-24" onclick="validateSecretPw()">확인</button>
                 <button type="button" class="btn w-24" onclick="closePwModal()">취소</button>
             </div>
         </div>
@@ -119,14 +119,62 @@
 </script>
 
 <script>
+    let selectedPostId = null;
+
     function checkSecretPost(link) {
+        // 제목 클릭 시 id 저장 + 모달 오픈
+        selectedPostId = link.dataset.id; // data-id에서 꺼냄
         const modal = document.getElementById("pwModal");
         modal.classList.remove("hidden");
+        document.getElementById("secretPwInput").value = "";
+        document.getElementById("secretPwInput").focus();
     }
+
     function closePwModal() {
-        const modal = document.getElementById("pwModal");
-        modal.classList.add("hidden");
+        document.getElementById("pwModal").classList.add("hidden");
     }
+
+    // ✅ 비밀번호 검증 호출 (확인 버튼에서 호출)
+    async function validateSecretPw() {
+        const pw = document.getElementById("secretPwInput").value.trim();
+        if (!selectedPostId) {
+            alert("게시글을 다시 선택해주세요.");
+            return;
+        }
+        if (!pw) {
+            alert("비밀번호를 입력하세요.");
+            return;
+        }
+
+        try {
+            const res = await fetch(`/board/checkSecretPw?id=${selectedPostId}&secretPw=${encodeURIComponent(pw)}`, {
+                method: "GET",
+                headers: { "Accept": "text/plain" }
+            });
+            const text = await res.text();
+            if (text === "OK") {
+                // 성공 → 상세로 이동
+                window.location.href = `/board/${selectedPostId}/detail`;
+            } else {
+                alert("비밀번호가 일치하지 않습니다.");
+                document.getElementById("secretPwInput").focus();
+            }
+        } catch (e) {
+            console.error(e);
+            alert("검증 중 오류가 발생했습니다.");
+        }
+    }
+
+    // Enter로도 확인
+    document.addEventListener("DOMContentLoaded", () => {
+        const input = document.getElementById("secretPwInput");
+        input.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                validateSecretPw();
+            }
+        });
+    });
 </script>
 
 </body>

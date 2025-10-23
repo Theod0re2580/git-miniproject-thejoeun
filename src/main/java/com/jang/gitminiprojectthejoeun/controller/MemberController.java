@@ -197,7 +197,12 @@ public class MemberController {
 
     // 회원삭제 폼
     @GetMapping("/delete")
-    public String delete() {
+    public String deleteForm(HttpSession session, RedirectAttributes ra) {
+        MemberDto loggedMember = (MemberDto) session.getAttribute("loggedMember");
+        if (loggedMember == null) {
+            ra.addFlashAttribute("msg", "로그인이 필요합니다.");
+            return "redirect:/member/login";
+        }
         return "member/delete";
     }
 

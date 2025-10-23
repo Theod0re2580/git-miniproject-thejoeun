@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/head::head('글보기')}"></head>
+<link rel="stylesheet" th:href="@{/css/detail.css}">
 <body class="flex flex-col min-h-screen bg-base-100">
 <header th:replace="~{fragments/header}"></header>
 
-<main class="flex-grow pt-24 pb-28">
-    <div class="w-full max-w-4xl mx-auto">
-        <h1 class="text-3xl font-bold mb-8 text-center">게시글 상세</h1>
-        <table class="table w-full border border-base-300">
+<main>
+    <div class="detail-container">
+        <h1>게시글 상세</h1>
+
+        <table class="detail-table">
             <tbody>
             <tr><th>제목</th><td th:text="${boardDto.title}"></td></tr>
             <tr><th>글쓴이</th><td th:text="${boardDto.writer}"></td></tr>
@@ -17,13 +19,56 @@
             </tbody>
         </table>
 
-        <div class="mt-6 flex justify-end gap-2" th:if="${session.loggedMember != null and session.loggedMember.userName == boardDto.writer}">
+        <div class="detail-actions"
+             th:if="${session.loggedMember != null and session.loggedMember.userName == boardDto.writer}">
             <a th:href="@{/board/{id}/update(id=${boardDto.id})}" class="btn btn-primary">수정</a>
             <button id="btn-delete" class="btn btn-error">삭제</button>
+        </div>
+
+        <div class="nav-buttons">
+            <div th:if="${prevBoardDto != null}">
+                <a th:href="@{/board/{id}/detail(id=${prevBoardDto.id})}">
+                    ← 이전글: <span th:text="${prevBoardDto.title}"></span>
+                </a>
+            </div>
+            <div th:if="${nextBoardDto != null}">
+                <a th:href="@{/board/{id}/detail(id=${nextBoardDto.id})}">
+                    다음글: <span th:text="${nextBoardDto.title}"></span> →
+                </a>
+            </div>
         </div>
     </div>
 </main>
 
 <footer th:replace="~{fragments/footer::footer-sns}"></footer>
+<script th:inline="javascript">
+    document.getElementById("btn-delete")?.addEventListener("click", async () => {
+        if (!confirm("정말로 이 게시글을 삭제하시겠습니까? 🗑️")) return;
+
+        const boardId = /*[[${boardDto.id}]]*/ 0;
+
+        try {
+            const response = await fetch("/board/delete", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ id: boardId }),
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert(result.message);
+                window.location.href = "/board/list";
+            } else {
+                alert(result.message || "삭제에 실패했습니다.");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("요청 처리 중 오류가 발생했습니다 ❌");
+        }
+    });
+</script>
 </body>
 </html>

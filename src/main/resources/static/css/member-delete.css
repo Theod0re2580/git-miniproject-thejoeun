@@ -1,0 +1,96 @@
+@charset "UTF-8";
+
+/* ================================
+   🔥 회원탈퇴 페이지 (delete.html 전용)
+   header / footer에는 영향 없음
+================================ */
+
+/* ===== 전체 레이아웃 ===== */
+#section {
+    width: 100%;
+    max-width: 600px;
+    margin: 80px auto;
+    text-align: center;
+    padding: 50px 40px;
+    background: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+/* ===== 제목 ===== */
+#section h1 {
+    font-size: 42px;
+    font-weight: 900;
+    color: #2b2b2b;
+    margin-bottom: 40px;
+    letter-spacing: -0.5px;
+}
+
+/* ===== 안내문구 ===== */
+#section .info-text {
+    font-size: 16px;
+    color: #555;
+    line-height: 1.5;
+    margin-bottom: 30px;
+}
+
+/* ===== 비밀번호 입력 영역 ===== */
+#section .form-control {
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+#section .label-text {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: #333;
+}
+
+#section input[type="password"] {
+    width: 100%;
+    padding: 18px 20px;
+    border: 1px solid #cfcfcf;
+    border-radius: 12px;
+    font-size: 15px;
+    transition: border-color 0.25s, box-shadow 0.25s;
+    background-color: rgba(255, 255, 255, 0.95);
+}
+
+#section input[type="password"]:focus {
+    border-color: #ef4444; /* 빨간색 테마 */
+    box-shadow: 0 0 6px rgba(239, 68, 68, 0.35);
+    outline: none;
+}
+
+/* ===== 탈퇴 버튼 ===== */
+#section .btn-delete {
+    width: 100%;
+    padding: 16px 0;
+    border: none;
+    border-radius: 12px;
+    background-color: #ef4444;
+    color: white;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+#section .btn-delete:hover {
+    background-color: #dc2626;
+}
+
+/* ===== 경고 메시지 ===== */
+#section .warning {
+    background-color: #fff0f0;
+    border: 1px solid #ff9f9f;
+    color: #a33;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    font-size: 15px;
+    line-height: 1.5;
+}

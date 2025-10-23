@@ -1,66 +1,123 @@
 @charset "UTF-8";
 
-*{margin: 0; padding: 0;}
-ul{list-style: none;}
-a{color: black; text-decoration: none;}
-img{vertical-align: top; border: 0;}
-body{
-  color: #2d2d2d;
+/* ============================================
+   🟦 회원정보 수정 페이지 (detail-update.html 전용)
+   login.css 기반의 일관된 스타일
+============================================ */
+
+/* ===== 전체 섹션 ===== */
+.update-section {
+    width: 100%;
+    max-width: 650px;
+    margin: 80px auto;
+    padding: 50px 40px;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    font-family: 'Noto Sans KR', sans-serif;
 }
 
-button { background: inherit; border:none; box-shadow:none;
-      font-family: 'Pretendard-Regular';
-      border-radius:0; padding:0; overflow:visible; cursor:pointer; }
+/* ===== 제목 ===== */
+.update-section h1 {
+    font-size: 40px;
+    font-weight: 900;
+    color: #2d2d2d;
+    margin-bottom: 40px;
+    text-align: center;
+}
 
-    /* input 기본 스타일 초기화 */
-    input {
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      appearance: none;
-      border: 0;
+/* ===== 입력 폼 전체 ===== */
+.update-section form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+/* ===== 라벨 ===== */
+.update-section label {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #333;
+    font-size: 16px;
+}
+
+/* ===== 입력창 ===== */
+.update-section input[type="text"],
+.update-section input[type="email"],
+.update-section input[type="password"] {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 15px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    transition: border-color 0.25s, box-shadow 0.25s;
+    background-color: #fafafa;
+}
+
+.update-section input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 6px rgba(99, 102, 241, 0.35);
+    outline: none;
+    background-color: #fff;
+}
+
+/* ===== 버튼 영역 ===== */
+.update-section .btn-area {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 30px;
+}
+
+/* ===== 기본 버튼 ===== */
+.update-section .btn {
+    padding: 12px 26px;
+    font-size: 15px;
+    font-weight: 700;
+    border-radius: 10px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+/* ===== 파란색(수정 완료) ===== */
+.update-section .btn-primary {
+    background-color: #6366f1;
+    color: white;
+}
+.update-section .btn-primary:hover {
+    background-color: #4f46e5;
+}
+
+/* ===== 회색(취소) ===== */
+.update-section .btn-secondary {
+    background-color: #9ca3af;
+    color: white;
+}
+.update-section .btn-secondary:hover {
+    background-color: #6b7280;
+}
+
+/* ===== 반응형 ===== */
+@media screen and (max-width: 640px) {
+    .update-section {
+        padding: 40px 20px;
+        margin: 60px auto;
     }
 
-#section{
-    text-align: center;
-    width: 100%;
-    height: 550px;
-}
-#section .member-cor{
-    margin-top: 80px;
-}
+    .update-section h1 {
+        font-size: 32px;
+        margin-bottom: 30px;
+    }
 
-#section input{
-    width: 300px;
-  padding: 20px 200px 20px 20px;
-  background-color: #ffffff8c;
-  border: 1px solid rgb(146, 146, 146);
-  border-radius: 15px;
-  font-size: 15px;
-}
-#section .username{
-    margin-top: 30px;
-}
-#section .userid{
-    margin-top: 30px;
-}
-#section .userpw{
-    margin-top: 30px;
-}
-#section .useremail .email{
-    margin-top: 30px;
-}
+    .update-section .btn-area {
+        flex-direction: column;
+        align-items: center;
+    }
 
-#section .corrention-btn{
-    margin-top: 40px;
-}
-#section .corrention-btn button{
-    width: 150px;
-  height: 50px;
-  font-size: 16px;
-  font-weight: 700;
-  border-radius: 15px;
-  background-color: rgb(0, 0, 0);
-  align-items: center;
-  text-align: center;
-    color: rgba(255, 255, 255, 0.966);
+    .update-section .btn {
+        width: 100%;
+        padding: 14px;
+    }
 }

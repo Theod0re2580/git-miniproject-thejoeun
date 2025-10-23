@@ -1,0 +1,125 @@
+/* =========================
+   ✏️ 글쓰기 페이지 스타일 (write.css)
+   ========================= */
+
+/* 메인 영역 */
+main {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 80vh;
+    background-color: #f9fafb;
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+}
+
+/* 글쓰기 폼 컨테이너 */
+.write-container {
+    width: 100%;
+    max-width: 850px;
+    background-color: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    padding: 3rem 4rem;
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+/* 제목 */
+.write-container h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 2.5rem;
+    color: #222;
+}
+
+/* 라벨 */
+.write-container label {
+    display: block;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+/* 입력 필드 공통 */
+.write-container input[type="text"],
+.write-container input[type="password"],
+.write-container textarea {
+    width: 100%;
+    border: 1px solid #d1d5db;
+    border-radius: 0.6rem;
+    padding: 0.9rem 1rem;
+    font-size: 1rem;
+    color: #333;
+    background-color: #fff;
+    transition: all 0.25s ease;
+    box-sizing: border-box;
+}
+
+/* 포커스 효과 */
+.write-container input:focus,
+.write-container textarea:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+}
+
+/* 텍스트에어리어 */
+.write-container textarea {
+    resize: vertical;
+    line-height: 1.6;
+}
+
+/* 비밀글 체크박스 영역 */
+.secret-section {
+    margin-top: 1.5rem;
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    padding: 1.2rem 1.5rem;
+}
+
+.secret-section label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+/* 버튼 영역 */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.8rem;
+    margin-top: 2rem;
+}
+
+/* 버튼 공통 */
+.btn {
+    padding: 0.8rem 1.2rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.25s ease;
+    border: none;
+    cursor: pointer;
+}
+
+/* 버튼 색상 */
+.btn-primary {
+    background-color: #4f46e5;
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background-color: #4338ca;
+}
+
+/* 에러 메시지 */
+.text-error {
+    color: #dc2626;
+    font-size: 0.9rem;
+    margin-top: 0.25rem;
+}
