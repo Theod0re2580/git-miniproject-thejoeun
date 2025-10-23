@@ -1,6 +1,6 @@
 @charset "UTF-8";
 
-/* ===== 로그인 전용 영역 ===== */
+/* ===== 회원가입 전용 영역 ===== */
 #section {
     width: 100%;
     max-width: 600px;
@@ -19,17 +19,13 @@
     color: #2d2d2d;
 }
 
-/* ===== 제목 (회원가입과 통일) ===== */
 #section .page-name {
-    margin-top: 10px;
-    margin-bottom: 60px;
-}
-#section .page-name h1,
-#section .page-name {
-    font-size: 36px;
+    font-size: 36px;    /* ✅ h1에 직접 적용 */
     font-weight: 900;
     color: #2b2b2b;
     letter-spacing: -0.5px;
+    margin-top: 10px;
+    margin-bottom: 60px;
 }
 
 /* ===== 입력창 공통 ===== */
@@ -50,16 +46,49 @@
 }
 
 /* ===== 필드 간격 ===== */
+#section .username,
 #section .userID,
-#section .userPW {
+#section .userPW,
+#section .userPWConfirm,
+#section .userEmail {
     margin-bottom: 25px;
 }
 
-/* ===== 버튼 ===== */
-#section .login-bt {
+/* ===== 아이디 입력 + 중복확인 버튼 (가로 정렬 고정) ===== */
+#section .userID {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    width: 400px;
+    margin: 0 auto 25px auto;
+}
+#section .userID input {
+    flex: 1;
+    height: 50px;
+    border-radius: 10px;
+}
+#section #btn-id-check {
+    width: 100px;
+    height: 50px;
+    background-color: #5f4dee;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 15px;
+    transition: background 0.2s ease;
+}
+#section #btn-id-check:hover {
+    background-color: #4339c8;
+}
+
+/* ===== 회원가입 버튼 ===== */
+#section .join-bt {
     margin-top: 40px;
 }
-#section .login-bt button {
+#section .join-bt button {
     width: 180px;
     height: 50px;
     font-size: 18px;
@@ -71,23 +100,6 @@
     cursor: pointer;
     transition: background 0.2s;
 }
-#section .login-bt button:hover {
+#section .join-bt button:hover {
     background-color: #4339c8;
-}
-
-/* ===== 반응형 ===== */
-@media screen and (max-width: 768px) {
-    #section {
-        margin: 40px 10px;
-        padding: 30px;
-    }
-
-    #section input {
-        max-width: 100%;
-        font-size: 14px;
-    }
-
-    #section .page-name h1 {
-        font-size: 36px !important;
-    }
 }

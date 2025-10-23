@@ -1,0 +1,122 @@
+@charset "UTF-8";
+
+/* ===== 게시판 전용 스타일 ===== */
+.board-wrap {
+    max-width: 1300px; /* ✅ 기존 1200 → 1300으로 확장 */
+    margin: 80px auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+/* 테이블 기본 스타일 */
+.board-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    font-size: 15px;
+    table-layout: fixed; /* ✅ 고정 레이아웃으로 열 비율 유지 */
+}
+
+/* 헤더 스타일 */
+.board-table thead {
+    background: #fafafa;
+}
+
+.board-table th {
+    padding: 14px;
+    color: #444;
+    font-weight: 600;
+    border-bottom: 1px solid #ddd;
+}
+
+/* 데이터 행 스타일 */
+.board-table td {
+    padding: 16px;
+    border-bottom: 1px solid #eee;
+    color: #333;
+    word-break: break-word;
+}
+
+/* 홀짝 줄 배경색 */
+.board-table tbody tr:nth-child(odd) {
+    background: #f7f7fb;
+}
+
+/* 상태 텍스트 */
+.board-table .status.complete {
+    color: #5f4dee;
+    font-weight: 600;
+}
+
+/* ===== 열 너비 조정 (날짜 완전 표시, 글쓴이 간격 축소) ===== */
+.board-table th:nth-child(1),
+.board-table td:nth-child(1) {
+    width: 7%; /* ID */
+}
+
+.board-table th:nth-child(2),
+.board-table td:nth-child(2) {
+    width: 43%; /* 제목 */
+}
+
+.board-table th:nth-child(3),
+.board-table td:nth-child(3) {
+    width: 13%; /* 글쓴이 간격 줄이기 */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.board-table th:nth-child(4),
+.board-table td:nth-child(4) {
+    width: 22%; /* ✅ 날짜 칸 여유 확보 */
+    min-width: 120px;
+    white-space: nowrap;
+}
+
+.board-table th:nth-child(5),
+.board-table td:nth-child(5) {
+    width: 8%; /* 조회수 */
+}
+
+/* 수정 버튼 */
+.board-table .edit-btn {
+    background: #b3a4ff;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 6px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.board-table .edit-btn:hover {
+    background: #8d7aff;
+}
+
+/* ===== 날짜 박스 (date-box) 스타일 ===== */
+.date-box {
+    display: inline-flex;               /* inline 수준에서 flex 적용 */
+    align-items: center;                /* 세로 중앙 정렬 */
+    justify-content: center;            /* 가로 중앙 정렬 */
+    background: #f2f2f6;                /* 연한 회색 배경 */
+    color: #5f4dee;                     /* 텍스트 색상 */
+    font-weight: 500;
+    border-radius: 8px;
+    padding: 6px 14px;
+    min-width: 115px;
+    height: 34px;                       /* ✅ 세로 크기 고정 */
+    line-height: 1;
+    margin: 0 auto;                     /* 가운데 배치 */
+    box-sizing: border-box;
+}
+
+/* 날짜 hover 시 강조 효과 */
+.date-box:hover {
+    background: #e5e4fa;
+    transition: background 0.2s ease-in-out;
+}

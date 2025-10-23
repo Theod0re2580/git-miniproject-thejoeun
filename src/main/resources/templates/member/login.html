@@ -1,43 +1,42 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/head::head('로그인')}"></head>
-<body class="flex flex-col min-h-screen pt-20 pb-28 bg-base-100">
+<link rel="stylesheet" th:href="@{/css/login.css}">
+<body class="flex flex-col min-h-screen bg-base-100">
 
 <header th:replace="~{fragments/header}"></header>
 
-<main class="flex-grow pt-24 pb-28">
-    <form action="../member/login" method="post" th:object="${loginDto}" class="max-w-2xl mx-auto space-y-4" id="section">
-        <h1 class="text-3xl my-10">로그인</h1>
+<main class="flex-grow pt-10 pb-20">
+    <div id="section">
+        <h1 class="page-name">로그인</h1>
 
-        <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-error shadow mb-4">
-            <ul class="list-disc pl-5">
-                <li th:each="err : ${#fields.globalErrors()}" th:text="${err}"></li>
-            </ul>
-        </div>
+        <form action="../member/login" method="post" th:object="${loginDto}">
+            <!-- 오류 메시지 -->
+            <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-error shadow mb-4">
+                <ul class="list-disc pl-5">
+                    <li th:each="err : ${#fields.globalErrors()}" th:text="${err}"></li>
+                </ul>
+            </div>
 
-        <div class="form-control">
-            <label class="label"><span class="label-text font-bold mb-2">USER ID</span></label>
-            <input type="text" th:field="*{userID}" placeholder="아이디를 입력하세요."
-                   class="input input-bordered w-full"/>
-        </div>
+            <!-- 아이디 -->
+            <div class="userID">
+                <input type="text" th:field="*{userID}" placeholder="아이디를 입력하세요." required>
+            </div>
 
-        <div class="form-control">
-            <label class="label mb-2"><span class="label-text font-bold">PASSWORD</span></label>
-            <input type="password" th:field="*{userPW}" placeholder="비밀번호 입력"
-                   class="input input-bordered w-full"/>
-        </div>
+            <!-- 비밀번호 -->
+            <div class="userPW">
+                <input type="password" th:field="*{userPW}" placeholder="비밀번호를 입력하세요." required>
+            </div>
 
-        <div class="form-control mt-6">
-            <button class="btn btn-primary w-full">로그인</button>
-        </div>
-    </form>
+            <!-- 로그인 버튼 -->
+            <div class="login-bt">
+                <button type="submit">로그인</button>
+            </div>
+        </form>
+    </div>
 </main>
 
 <footer th:replace="~{fragments/footer::footer-sns}"></footer>
 
-<script th:inline="javascript">
-    const error = /*[[${error}]]*/ null;
-    if (error) alert(error);
-</script>
 </body>
 </html>
