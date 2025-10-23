@@ -1,0 +1,62 @@
+@charset "UTF-8";
+
+*{margin: 0; padding: 0;}
+ul{list-style: none;}
+a{color: black; text-decoration: none;}
+img{vertical-align: top; border: 0;}
+body{
+  color: #2d2d2d;
+}
+
+button { background: inherit; border:none; box-shadow:none;
+      font-family: 'Pretendard-Regular';
+      border-radius:0; padding:0; overflow:visible; cursor:pointer; }
+
+    /* input 기본 스타일 초기화 */
+    input {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      border: 0;
+    }
+
+#section{
+    width: 100%;
+    height: 600px;
+    text-align: center;
+}
+#section .page-name{
+    margin-top: 80px;
+    margin-bottom: 50px;
+}
+#section input{
+  width: 300px;
+  padding: 20px 200px 20px 20px;
+  background-color: #ffffff8c;
+  border: 1px solid rgb(146, 146, 146);
+  border-radius: 15px;
+  font-size: 15px;
+}
+#section .username{
+  margin-bottom: 30px;
+}
+#section .userID{
+  margin-bottom: 30px;
+}
+#section .userPW{
+  margin-bottom: 30px;
+}
+#section .join-bt {
+    margin-top: 40px;
+}
+#section .join-bt button{
+  width: 150px;
+  height: 50px;
+  font-size: 20px;
+  font-weight: 700;
+  border-radius: 15px;
+  background-color: rgb(0, 0, 0);
+  color: rgba(255, 255, 255, 0.966);
+  align-items: center;
+  text-align: center;
+}

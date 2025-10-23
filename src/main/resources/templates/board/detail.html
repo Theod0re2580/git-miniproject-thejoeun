@@ -1,113 +1,29 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/head::head('글보기')}"></head>
-<body>
+<body class="flex flex-col min-h-screen bg-base-100">
 <header th:replace="~{fragments/header}"></header>
 
-<div class="w-full max-w-4xl mx-auto mt-10">
-    <h1 class="text-3xl font-bold mb-8 text-center">게시글 상세</h1>
+<main class="flex-grow pt-24 pb-28">
+    <div class="w-full max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8 text-center">게시글 상세</h1>
+        <table class="table w-full border border-base-300">
+            <tbody>
+            <tr><th>제목</th><td th:text="${boardDto.title}"></td></tr>
+            <tr><th>글쓴이</th><td th:text="${boardDto.writer}"></td></tr>
+            <tr><th>내용</th><td th:text="${boardDto.content}" class="whitespace-pre-line"></td></tr>
+            <tr><th>조회수</th><td th:text="${boardDto.hit}"></td></tr>
+            <tr><th>날짜</th><td th:text="${#temporals.format(boardDto.regdate,'yyyy-MM-dd HH:mm')}"></td></tr>
+            </tbody>
+        </table>
 
-    <table class="table w-full border border-base-300">
-        <tbody>
-        <!-- 제목 -->
-        <tr>
-            <th class="w-32 bg-base-200 text-left px-4 py-2">제목</th>
-            <td class="px-4 py-2">
-                <span th:text="${boardDto.title}">제목</span>
-                <span th:if="${boardDto.secretFlag == 1}" class="text-error font-bold ml-1">🔒 비밀글</span>
-            </td>
-        </tr>
-
-        <!-- 글쓴이 -->
-        <tr>
-            <th class="bg-base-200 text-left px-4 py-2">글쓴이</th>
-            <td class="px-4 py-2" th:text="${boardDto.writer}">작성자</td>
-        </tr>
-
-        <!-- 내용 -->
-        <tr>
-            <th class="bg-base-200 text-left px-4 py-2 align-top">내용</th>
-            <td class="px-4 py-2 whitespace-pre-line" th:text="${boardDto.content}">내용</td>
-        </tr>
-
-        <!-- 조회수 -->
-        <tr>
-            <th class="bg-base-200 text-left px-4 py-2">조회수</th>
-            <td class="px-4 py-2" th:text="${boardDto.hit}">0</td>
-        </tr>
-
-        <!-- 날짜 -->
-        <tr>
-            <th class="bg-base-200 text-left px-4 py-2">날짜</th>
-            <td class="px-4 py-2" th:text="${#temporals.format(boardDto.regdate, 'yyyy-MM-dd HH:mm')}">2025-10-22</td>
-        </tr>
-        </tbody>
-    </table>
-
-    <!-- 수정/삭제 버튼 (로그인 + 본인일 경우만 표시) -->
-    <div class="mt-6 flex justify-end gap-2"
-         th:if="${session.loggedMember != null and session.loggedMember.userName == boardDto.writer}">
-        <a th:href="@{/board/{id}/update(id=${boardDto.id})}" class="btn btn-primary">수정하기</a>
-        <button id="btn-delete" class="btn btn-error">삭제하기</button>
-    </div>
-
-    <!-- 이전/다음 글 -->
-    <div class="mt-6 border-t border-base-300 pt-4 space-y-2">
-
-        <!-- 이전 글 -->
-        <div>
-            <th:block th:if="${prevBoardDto != null}">
-                <a th:href="@{/board/{id}/detail(id=${prevBoardDto.id})}"
-                   class="link link-hover text-sm text-gray-600">
-                    이전 글 :
-                    <span th:text="${prevBoardDto.title}"></span>
-                </a>
-            </th:block>
-            <th:block th:if="${prevBoardDto == null}">
-                <span class="text-gray-400 text-sm">이전 글이 없습니다.</span>
-            </th:block>
-        </div>
-
-        <!-- 다음 글 -->
-        <div>
-            <th:block th:if="${nextBoardDto != null}">
-                <a th:href="@{/board/{id}/detail(id=${nextBoardDto.id})}"
-                   class="link link-hover text-sm text-gray-600">
-                    다음 글 :
-                    <span th:text="${nextBoardDto.title}"></span>
-                </a>
-            </th:block>
-            <th:block th:if="${nextBoardDto == null}">
-                <span class="text-gray-400 text-sm">다음 글이 없습니다.</span>
-            </th:block>
+        <div class="mt-6 flex justify-end gap-2" th:if="${session.loggedMember != null and session.loggedMember.userName == boardDto.writer}">
+            <a th:href="@{/board/{id}/update(id=${boardDto.id})}" class="btn btn-primary">수정</a>
+            <button id="btn-delete" class="btn btn-error">삭제</button>
         </div>
     </div>
-</div>
+</main>
 
-<div th:replace="~{fragments/footer::footer-sns}"></div>
-
-<script th:inline="javascript">
-    const msg = /*[[${msg}]]*/ null;
-    if (msg) alert(msg);
-
-    const btnDelete = document.querySelector("#btn-delete");
-    const boardId = /*[[${boardDto.id}]]*/ 0;
-
-    if (btnDelete) {
-        btnDelete.addEventListener("click", async () => {
-            if (!confirm("정말 삭제하시겠습니까?")) return;
-
-            const res = await fetch("/board/delete", {
-                headers: { "Content-Type": "application/json" },
-                method: "POST",
-                body: JSON.stringify({ id: boardId })
-            });
-
-            const data = await res.json();
-            alert(data.message);
-            if (data.success) location.href = "/board/list";
-        });
-    }
-</script>
+<footer th:replace="~{fragments/footer::footer-sns}"></footer>
 </body>
 </html>

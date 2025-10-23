@@ -4,39 +4,42 @@
 <body>
 <header th:replace="~{fragments/header}"></header>
 
-<div class="overflow-x-auto max-w-6xl mx-auto mt-10">
-    <table class="table table-zebra w-full border border-base-300">
-        <!-- 테이블 헤더 -->
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>제목</th>
-            <th>글쓴이</th>
-            <th>날짜</th>
-            <th>조회수</th>
-        </tr>
-        </thead>
+<main class="flex-grow pt-24 pb-28">
+    <div class="overflow-x-auto max-w-6xl mx-auto mt-10">
+        <table class="table table-zebra w-full border border-base-300">
+            <!-- 테이블 헤더 -->
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>제목</th>
+                <th>글쓴이</th>
+                <th>날짜</th>
+                <th>조회수</th>
+            </tr>
+            </thead>
 
-        <!-- 테이블 바디 -->
-        <tbody>
-        <tr th:each="item:${searchList}">
-            <td>
-                <a th:href="@{../board/{id}/detail(id=${item.id})}" class="link link-primary" th:text="${item.id}"></a>
-            </td>
-            <td>
-                <a th:href="@{../board/{id}/detail(id=${item.id})}" class="link link-hover" th:text="${item.title}"></a>
-            </td>
-            <td th:text="${item.writer}"></td>
-            <td th:text="${item.regdate}"></td>
-            <td th:text="${item.hit}"></td>
-        </tr>
-        </tbody>
-    </table>
+            <!-- 테이블 바디 -->
+            <tbody>
+            <tr th:each="item:${searchList}">
+                <td>
+                    <a th:href="@{../board/{id}/detail(id=${item.id})}" class="link link-primary" th:text="${item.id}"></a>
+                </td>
+                <td>
+                    <a th:href="@{../board/{id}/detail(id=${item.id})}" class="link link-hover" th:text="${item.title}"></a>
+                </td>
+                <td th:text="${item.writer}"></td>
+                <td th:text="${item.regdate}"></td>
+                <td th:text="${item.hit}"></td>
+            </tr>
+            </tbody>
+        </table>
 
 
-    <!-- 로그인한 사람만 보이게 하기 -->
-    <div class="mt-5" th:if="${session.loggedMember!=null}"><a href="../board/write" class="btn btn-primary">글쓰기</a></div>
-</div>
+        <!-- 로그인한 사람만 보이게 하기 -->
+        <div class="mt-5" th:if="${session.loggedMember!=null}"><a href="../board/write" class="btn btn-primary">글쓰기</a></div>
+    </div>
+</main>
+
 <div th:replace="~{fragments/footer::footer-sns}"></div>
 </body>
 </html>

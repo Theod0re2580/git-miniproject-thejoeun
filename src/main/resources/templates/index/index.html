@@ -1,11 +1,78 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/head::head('홈')}"></head>
-<body>
+<body class="flex flex-col min-h-screen pt-20 pb-28 bg-base-100">
 <header th:replace="~{fragments/header}"></header>
-    <h1 class="text-3xl my-10">홈</h1>
+
+<main class="flex-grow pt-24 pb-28">
+    <!-- Hero 섹션 -->
+    <section class="text-center mt-16">
+        <h1 class="text-4xl font-bold mb-4">JANG 게시판에 오신 것을 환영합니다 👋</h1>
+        <p class="text-lg text-gray-600 mb-6">
+            회원가입 후 자유롭게 글을 작성하고, 다른 사람과 소통해보세요.
+        </p>
+        <a th:href="@{/board/list}" class="btn btn-primary">게시판 바로가기</a>
+    </section>
+
+    <!-- 주요 기능 카드 -->
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto mt-20 px-4">
+        <div class="card shadow-lg bg-base-200">
+            <div class="card-body text-center">
+                <h2 class="card-title justify-center">✍️ 게시글 작성</h2>
+                <p>쉽고 빠르게 게시글을 작성하고 수정할 수 있습니다.</p>
+            </div>
+        </div>
+        <div class="card shadow-lg bg-base-200">
+            <div class="card-body text-center">
+                <h2 class="card-title justify-center">💬 댓글 소통</h2>
+                <p>다른 사용자와 댓글로 자유롭게 의견을 나누세요.</p>
+            </div>
+        </div>
+        <div class="card shadow-lg bg-base-200">
+            <div class="card-body text-center">
+                <h2 class="card-title justify-center">🔒 비밀글 기능</h2>
+                <p>중요한 내용은 비밀글로 보호할 수 있습니다.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 공지 / 소개 -->
+    <section class="max-w-5xl mx-auto mt-20 px-6">
+        <h2 class="text-2xl font-bold mb-4">📢 공지사항</h2>
+        <ul class="list-disc ml-6 text-gray-700 space-y-2">
+            <li>새로운 디자인 테마가 적용되었습니다.</li>
+            <li>회원 로그인 기능이 개선되었습니다.</li>
+            <li>비밀번호 찾기 기능이 곧 추가될 예정입니다.</li>
+        </ul>
+    </section>
+
+    <!-- 통계 / 요약 (DB없이 예시 데이터 표시) -->
+    <section class="max-w-6xl mx-auto mt-20 mb-20 px-6">
+        <h2 class="text-2xl font-bold mb-6">📊 게시판 현황 요약</h2>
+        <div class="stats shadow w-full">
+            <div class="stat">
+                <div class="stat-title">전체 게시글</div>
+                <div class="stat-value">325</div>
+                <div class="stat-desc">지난주보다 5% 증가</div>
+            </div>
+            <div class="stat">
+                <div class="stat-title">회원 수</div>
+                <div class="stat-value">4</div>
+                <div class="stat-desc">활동 중 회원 기준</div>
+            </div>
+            <div class="stat">
+                <div class="stat-title">오늘 방문자</div>
+                <div class="stat-value">89명</div>
+                <div class="stat-desc">오늘 기준</div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/footer::footer-sns}"></footer>
 </body>
 </html>
+
 <script th:inline="javascript">
     const msg = /*[[${msg}]]*/ null;
     if (msg) {
