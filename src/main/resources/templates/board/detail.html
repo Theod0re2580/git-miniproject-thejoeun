@@ -9,6 +9,7 @@
     <div class="detail-container">
         <h1>게시글 상세</h1>
 
+        <!-- ✅ 게시글 내용 -->
         <table class="detail-table">
             <tbody>
             <tr><th>제목</th><td th:text="${boardDto.title}"></td></tr>
@@ -19,28 +20,65 @@
             </tbody>
         </table>
 
+        <!-- ✅ 수정 / 삭제 버튼 (작성자 전용) -->
         <div class="detail-actions"
              th:if="${session.loggedMember != null and session.loggedMember.userName == boardDto.writer}">
             <a th:href="@{/board/{id}/update(id=${boardDto.id})}" class="btn btn-primary">수정</a>
             <button id="btn-delete" class="btn btn-error">삭제</button>
         </div>
 
-        <div class="nav-buttons">
+        <!-- ✅ 이전글 / 다음글 영역 -->
+        <div class="nav-buttons mt-10 space-y-3">
             <div th:if="${prevBoardDto != null}">
-                <a th:href="@{/board/{id}/detail(id=${prevBoardDto.id})}">
+                <!-- 공개글 -->
+                <a th:if="${prevBoardDto.secretFlag == 0}"
+                   th:href="@{/board/{id}/detail(id=${prevBoardDto.id})}">
                     ← 이전글: <span th:text="${prevBoardDto.title}"></span>
                 </a>
+
+                <!-- 비밀글 -->
+                <a th:if="${prevBoardDto.secretFlag == 1}"
+                   href="#"
+                   th:data-id="${prevBoardDto.id}"
+                   th:text="'← 이전글: ' + ${prevBoardDto.title}"
+                   class="secret-link text-error"></a>
             </div>
+
             <div th:if="${nextBoardDto != null}">
-                <a th:href="@{/board/{id}/detail(id=${nextBoardDto.id})}">
+                <!-- 공개글 -->
+                <a th:if="${nextBoardDto.secretFlag == 0}"
+                   th:href="@{/board/{id}/detail(id=${nextBoardDto.id})}">
                     다음글: <span th:text="${nextBoardDto.title}"></span> →
                 </a>
+
+                <!-- 비밀글 -->
+                <a th:if="${nextBoardDto.secretFlag == 1}"
+                   href="#"
+                   th:data-id="${nextBoardDto.id}"
+                   th:text="'다음글: ' + ${nextBoardDto.title} + ' →'"
+                   class="secret-link text-error"></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ 비밀번호 입력 모달 -->
+    <div id="pwModal"
+         class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white p-5 rounded-lg shadow-lg w-80 text-center">
+            <p class="font-bold mb-3">비밀글 비밀번호를 입력하세요 🔐</p>
+            <input type="password" id="secretPwInput" placeholder="비밀번호 입력"
+                   class="input input-bordered w-full mb-3"/>
+            <div class="flex justify-center gap-3">
+                <button id="confirmBtn" class="btn btn-primary w-24" onclick="validateSecretPw()">확인</button>
+                <button type="button" class="btn w-24" onclick="closePwModal()">취소</button>
             </div>
         </div>
     </div>
 </main>
 
 <footer th:replace="~{fragments/footer::footer-sns}"></footer>
+
+<!-- ✅ 게시글 삭제 JS (기존 코드 유지) -->
 <script th:inline="javascript">
     document.getElementById("btn-delete")?.addEventListener("click", async () => {
         if (!confirm("정말로 이 게시글을 삭제하시겠습니까? 🗑️")) return;
@@ -70,5 +108,68 @@
         }
     });
 </script>
+
+<!-- ✅ 비밀글 검증 기능 (이전글/다음글용) -->
+<script>
+    let selectedPostId = null;
+
+    // 비밀글 클릭 시 모달 열기
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".secret-link").forEach(link => {
+            link.addEventListener("click", (e) => {
+                e.preventDefault();
+                selectedPostId = link.dataset.id;
+                const modal = document.getElementById("pwModal");
+                modal.classList.remove("hidden");
+                const input = document.getElementById("secretPwInput");
+                input.value = "";
+                input.focus();
+            });
+        });
+
+        // Enter 키로 확인
+        const pwInput = document.getElementById("secretPwInput");
+        pwInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                validateSecretPw();
+            }
+        });
+    });
+
+    // 모달 닫기
+    function closePwModal() {
+        document.getElementById("pwModal").classList.add("hidden");
+    }
+
+    // 비밀번호 검증
+    async function validateSecretPw() {
+        const pw = document.getElementById("secretPwInput").value.trim();
+        if (!selectedPostId) {
+            alert("게시글 정보를 찾을 수 없습니다.");
+            return;
+        }
+        if (!pw) {
+            alert("비밀번호를 입력하세요.");
+            return;
+        }
+
+        try {
+            const res = await fetch(`/board/checkSecretPw?id=${selectedPostId}&secretPw=${encodeURIComponent(pw)}`);
+            const result = await res.text();
+            if (result === "OK") {
+                closePwModal();
+                window.location.href = `/board/${selectedPostId}/detail`;
+            } else {
+                alert("비밀번호가 일치하지 않습니다 ❌");
+                document.getElementById("secretPwInput").focus();
+            }
+        } catch (err) {
+            console.error(err);
+            alert("비밀번호 검증 중 오류가 발생했습니다.");
+        }
+    }
+</script>
+
 </body>
 </html>

@@ -122,19 +122,18 @@
     let selectedPostId = null;
 
     function checkSecretPost(link) {
-        // 제목 클릭 시 id 저장 + 모달 오픈
-        selectedPostId = link.dataset.id; // data-id에서 꺼냄
+        selectedPostId = link.dataset.id;
         const modal = document.getElementById("pwModal");
         modal.classList.remove("hidden");
-        document.getElementById("secretPwInput").value = "";
-        document.getElementById("secretPwInput").focus();
+        const input = document.getElementById("secretPwInput");
+        input.value = "";
+        input.focus();
     }
 
     function closePwModal() {
         document.getElementById("pwModal").classList.add("hidden");
     }
 
-    // ✅ 비밀번호 검증 호출 (확인 버튼에서 호출)
     async function validateSecretPw() {
         const pw = document.getElementById("secretPwInput").value.trim();
         if (!selectedPostId) {
@@ -147,25 +146,23 @@
         }
 
         try {
-            const res = await fetch(`/board/checkSecretPw?id=${selectedPostId}&secretPw=${encodeURIComponent(pw)}`, {
-                method: "GET",
-                headers: { "Accept": "text/plain" }
-            });
+            const res = await fetch(`/board/checkSecretPw?id=${selectedPostId}&secretPw=${encodeURIComponent(pw)}`);
             const text = await res.text();
+
             if (text === "OK") {
-                // 성공 → 상세로 이동
+                closePwModal(); // 모달 닫기
                 window.location.href = `/board/${selectedPostId}/detail`;
             } else {
-                alert("비밀번호가 일치하지 않습니다.");
+                alert("비밀번호가 일치하지 않습니다 ❌");
                 document.getElementById("secretPwInput").focus();
             }
-        } catch (e) {
-            console.error(e);
-            alert("검증 중 오류가 발생했습니다.");
+        } catch (error) {
+            console.error(error);
+            alert("비밀번호 검증 중 오류가 발생했습니다.");
         }
     }
 
-    // Enter로도 확인
+    // ✅ Enter 키로도 확인 가능
     document.addEventListener("DOMContentLoaded", () => {
         const input = document.getElementById("secretPwInput");
         input.addEventListener("keydown", (e) => {

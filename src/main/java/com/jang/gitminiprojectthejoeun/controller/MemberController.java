@@ -29,8 +29,12 @@ public class MemberController {
 
     // 회원가입 폼
     @GetMapping("/signup")
-    public String signup(Model model) {
-        model.addAttribute("memberDto", new MemberDto());
+    public String signup(Model model,
+                         @ModelAttribute("memberDto") MemberDto memberDto) {
+        // FlashAttribute로 넘어온 memberDto가 있으면 그대로 사용
+        if (!model.containsAttribute("memberDto")) {
+            model.addAttribute("memberDto", new MemberDto());
+        }
         return "member/signup";
     }
 
@@ -40,33 +44,50 @@ public class MemberController {
                          BindingResult bindingResult,
                          RedirectAttributes redirectAttributes,
                          Model model) {
+
         if (bindingResult.hasErrors()) {
             return "member/signup";
         }
 
-        int duplicateUserID = memberDao.existsUserId(memberDto.getUserID());
-        int duplicateUserEmail = memberDao.existsEmail(memberDto.getUserEmail());
+        try {
+            // ✅ 중복 체크
+            int duplicateUserID = memberDao.existsUserId(memberDto.getUserID());
+            int duplicateUserEmail = memberDao.existsEmail(memberDto.getUserEmail());
 
-        if (duplicateUserID > 0) {
-            bindingResult.rejectValue("userID", "duplicateID", "사용할 수 없는 ID입니다.");
-            return "member/signup";
-        }
-        if (duplicateUserEmail > 0) {
-            bindingResult.rejectValue("userEmail", "duplicateEmail", "사용할 수 없는 Email입니다.");
-            return "member/signup";
-        }
-        if (!memberDto.getUserPW().equals(memberDto.getUserPWConfirm())) {
-            bindingResult.rejectValue("userPWConfirm", "confirmPassword", "패스워드가 일치하지 않습니다.");
-            return "member/signup";
-        }
+            if (duplicateUserID > 0) {
+                redirectAttributes.addFlashAttribute("msg", "이미 사용 중인 아이디입니다 ❌");
+                redirectAttributes.addFlashAttribute("memberDto", memberDto); // ✅ 입력값 유지
+                return "redirect:/member/signup";
+            }
 
-        int result = memberDao.signup(memberDto);
-        if (result > 0) {
-            redirectAttributes.addFlashAttribute("msg", "회원가입이 완료되었습니다 🎉");
-            return "redirect:/index"; // ✅ 회원가입 후 홈으로 이동
-        } else {
-            model.addAttribute("error", "회원가입 중 문제가 발생했습니다.");
-            return "member/signup";
+            if (duplicateUserEmail > 0) {
+                redirectAttributes.addFlashAttribute("msg", "이미 사용 중인 이메일입니다 ❌");
+                redirectAttributes.addFlashAttribute("memberDto", memberDto); // ✅ 입력값 유지
+                return "redirect:/member/signup";
+            }
+
+            // ✅ 비밀번호 일치 확인
+            if (!memberDto.getUserPW().equals(memberDto.getUserPWConfirm())) {
+                redirectAttributes.addFlashAttribute("msg", "패스워드가 일치하지 않습니다 ❌");
+                redirectAttributes.addFlashAttribute("memberDto", memberDto);
+                return "redirect:/member/signup";
+            }
+
+            // ✅ DB 등록
+            int result = memberDao.signup(memberDto);
+            if (result > 0) {
+                redirectAttributes.addFlashAttribute("msg", "회원가입이 완료되었습니다 🎉");
+                return "redirect:/index";
+            } else {
+                redirectAttributes.addFlashAttribute("msg", "회원가입 중 문제가 발생했습니다 ❌");
+                redirectAttributes.addFlashAttribute("memberDto", memberDto);
+                return "redirect:/member/signup";
+            }
+
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            redirectAttributes.addFlashAttribute("msg", "이미 존재하는 아이디 또는 이메일입니다 ❌");
+            redirectAttributes.addFlashAttribute("memberDto", memberDto);
+            return "redirect:/member/signup";
         }
     }
 
@@ -99,17 +120,26 @@ public class MemberController {
             return "member/login";
         }
 
-        MemberDto loggedMemberDto = memberDao.login(loginDto);
-
-        if (loggedMemberDto != null) {
-            session.setAttribute("loggedMember", loggedMemberDto);
-            redirectAttributes.addFlashAttribute("msg", "로그인 성공했습니다 🎉");
-            return "redirect:/";
-        } else {
-            model.addAttribute("error", "아이디 또는 비밀번호가 틀렸습니다.");
-            return "member/login";
+        // 1️⃣ 아이디 존재 여부 확인
+        int idExists = memberDao.existsUserId(loginDto.getUserID());
+        if (idExists == 0) {
+            redirectAttributes.addFlashAttribute("msg", "아이디가 틀립니다 ❌");
+            return "redirect:/member/login";
         }
+
+        // 2️⃣ 로그인 시도 (아이디는 존재함)
+        MemberDto loggedMemberDto = memberDao.login(loginDto);
+        if (loggedMemberDto == null) {
+            redirectAttributes.addFlashAttribute("msg", "비밀번호가 틀립니다 ❌");
+            return "redirect:/member/login";
+        }
+
+        // 3️⃣ 로그인 성공
+        session.setAttribute("loggedMember", loggedMemberDto);
+        redirectAttributes.addFlashAttribute("msg", "로그인 성공했습니다 🎉");
+        return "redirect:/";
     }
+
 
     // 로그아웃
     @GetMapping("/logout")
@@ -180,17 +210,20 @@ public class MemberController {
             return "redirect:/member/login";
         }
 
-        // 본인만 수정
         memberDto.setId(logged.getId());
 
-        int updated = memberDao.updateMember(memberDto);
-        if (updated > 0) {
-            // 세션 최신화
-            session.setAttribute("loggedMember", memberDao.findByUserId(logged.getUserID()));
-            ra.addFlashAttribute("msg", "회원정보가 수정되었습니다 ✅");
-        } else {
-            ra.addFlashAttribute("msg", "수정에 실패했습니다 ❌");
+        try {
+            int updated = memberDao.updateMember(memberDto);
+            if (updated > 0) {
+                session.setAttribute("loggedMember", memberDao.findByUserId(logged.getUserID()));
+                ra.addFlashAttribute("msg", "회원정보가 수정되었습니다 ✅");
+            } else {
+                ra.addFlashAttribute("msg", "수정에 실패했습니다 ❌");
+            }
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            ra.addFlashAttribute("msg", "이미 사용 중인 이메일입니다 ❌");
         }
+
         return "redirect:/member/info";
     }
 

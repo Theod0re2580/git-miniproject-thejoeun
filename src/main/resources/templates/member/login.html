@@ -10,7 +10,7 @@
     <div id="section">
         <h1 class="page-name">로그인</h1>
 
-        <form action="../member/login" method="post" th:object="${loginDto}">
+        <form th:action="@{/member/login}" method="post" th:object="${loginDto}">
             <!-- 오류 메시지 -->
             <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-error shadow mb-4">
                 <ul class="list-disc pl-5">
@@ -37,6 +37,14 @@
 </main>
 
 <footer th:replace="~{fragments/footer::footer-sns}"></footer>
+
+<!-- ✅ 알림 메시지 추가 (맨 아래에 넣기) -->
+<script th:inline="javascript">
+    const msg = /*[[${msg}]]*/ null;
+    if (msg) {
+        alert(msg);
+    }
+</script>
 
 </body>
 </html>
